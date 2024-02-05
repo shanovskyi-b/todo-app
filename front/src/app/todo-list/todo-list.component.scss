@@ -1,0 +1,31 @@
+.todo-lists ::ng-deep {
+  mat-radio-group {
+    display: block;
+  }
+  mat-radio-button {
+    width: 220px;
+    height: 30px;
+    margin-left: 20px;
+    margin-top: 10px;
+    border-radius: 25px;
+    text-align: center;
+    display: inline-block;
+  }
+  mat-radio-button:hover {
+    background-color: rgb(216, 213, 213);
+  }
+  .mdc-radio {
+    display: none;
+  }
+  .mat-mdc-radio-checked {
+    background-color: rgb(235, 191, 69);
+  }
+  .mat-mdc-radio-checked:hover {
+    background-color: rgb(250, 166, 39);
+  }
+  a {
+    width: 220px;
+    height: 30px;
+    display: block;
+  }
+}

@@ -4,7 +4,11 @@ import { RouterModule, Routes } from '@angular/router';
 const routes: Routes = [
   {
     path: '',
-    loadChildren: () => import('./styleguide/styleguide.module').then(m => m.StyleguideModule)
+    loadChildren: () => import('./todo-list/todo-list.module').then(m => m.TodoListModule),
+  },
+  {
+    path: 'todo',
+    loadChildren: () => import('./todo-list/todo-list.module').then(m => m.TodoListModule),
   }
 ];
 
