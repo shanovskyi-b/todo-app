@@ -1,12 +1,12 @@
 <div [formGroup]="radioBtnGroup" class="task-list">
   <mat-radio-group formControlName="activeTaskList" class="task-list__group">
     <a
-      *ngFor="let toDoList of allTaskLists?.lists" 
+      *ngFor="let todoList of allTaskLists?.lists" 
       [routerLink]="['/todo']"
-      [queryParams]="{list: toDoList.id}"
+      [queryParams]="{list: todoList.id}"
       class="task-list__link"
     >
-      <mat-radio-button [value]="toDoList.id" class="task-list__list"> {{toDoList.title}}</mat-radio-button>
+      <mat-radio-button [value]="todoList.id" class="task-list__list">{{todoList.title}}</mat-radio-button>
     </a>
   </mat-radio-group>
 </div>
