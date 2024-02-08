@@ -2,15 +2,8 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TodoListComponent } from './todo-list.component';
 import { SharedModule } from '../shared/shared.module';
-import { Routes, RouterModule } from '@angular/router';
-
-
-const routes: Routes = [
-  {
-    path: '',
-    component: TodoListComponent,
-  }
-];
+import { RouterModule } from '@angular/router';
+import { TodoListRoutingModule } from './todo-list-routing.module';
 
 
 @NgModule({
@@ -21,8 +14,7 @@ const routes: Routes = [
     CommonModule,
     SharedModule,
     RouterModule,
-    RouterModule.forChild(routes),
+    TodoListRoutingModule,
   ],
-  exports: [RouterModule],
 })
 export class TodoListModule { }

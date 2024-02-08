@@ -1,7 +1,9 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { ApiService, Lists } from '../shared/services/Api.service';
-import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, OnDestroy } from '@angular/core';
+import { ApiService } from '../shared/services/api.service';
+import { FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
+import { TaskGroups } from '../shared/shared-interfaces.models';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-todo-list',
@@ -9,31 +11,33 @@ import { ActivatedRoute } from '@angular/router';
   styleUrl: './todo-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class TodoListComponent implements OnInit{
-
-  allTaskLists: Lists;
+export class TodoListComponent implements OnInit, OnDestroy { 
+  allTaskLists: TaskGroups| undefined;
 
   radioBtnGroup: FormGroup = new FormGroup ({
     activeTaskList: new FormControl()
   })
 
-  constructor(public apiService: ApiService, private changeDetectorRef: ChangeDetectorRef, public formBuilder: FormBuilder, private route: ActivatedRoute) {
-    
-  }
+  subscription: Subscription | undefined;
+
+  constructor(private apiService: ApiService, private changeDetectorRef: ChangeDetectorRef, private route: ActivatedRoute) {}
 
   ngOnInit(): void {
     this.loadTaskLists();
-    this.route.queryParams
+
+    this.subscription = this.route.queryParams
       .subscribe(params => {
-        if (params['list'] != undefined) {
-          this.radioBtnGroup = new FormGroup ({
-            activeTaskList: new FormControl(params['list'])
-          })
+        if (params['list']) {
+          this.radioBtnGroup.controls['activeTaskList'].setValue(params['list'])
         }
       })
   }
-  
-  loadTaskLists() {
+
+  ngOnDestroy(): void {
+    this.subscription?.unsubscribe();
+  }
+
+  private loadTaskLists() {
     this.apiService.getLists()
       .subscribe(data => {
         this.allTaskLists = data;

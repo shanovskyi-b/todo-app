@@ -1,7 +1,12 @@
-<div [formGroup]="radioBtnGroup" class="todo-lists">
-  <mat-radio-group *ngFor="let toDoList of allTaskLists?.lists" formControlName="activeTaskList">
-    <mat-radio-button value="{{toDoList.id}}">
-      <a [routerLink]="['/todo']" [queryParams]="{list: toDoList.id}">{{toDoList.title}}</a>
-    </mat-radio-button>
+<div [formGroup]="radioBtnGroup" class="task-list">
+  <mat-radio-group formControlName="activeTaskList" class="task-list__group">
+    <a
+      *ngFor="let toDoList of allTaskLists?.lists" 
+      [routerLink]="['/todo']"
+      [queryParams]="{list: toDoList.id}"
+      class="task-list__link"
+    >
+      <mat-radio-button [value]="toDoList.id" class="task-list__list"> {{toDoList.title}}</mat-radio-button>
+    </a>
   </mat-radio-group>
 </div>

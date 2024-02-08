@@ -1,31 +1,46 @@
-.todo-lists ::ng-deep {
-  mat-radio-group {
+$active-task-group: rgb(235, 191, 69);
+
+.task-list::ng-deep {
+  max-width: 220px;
+  margin-left: 20px;
+  margin-top: 10px;
+
+  .task-list__group {
     display: block;
   }
-  mat-radio-button {
+
+  .task-list__list {
     width: 220px;
     height: 30px;
-    margin-left: 20px;
-    margin-top: 10px;
     border-radius: 25px;
+    margin-top: 10px;
     text-align: center;
-    display: inline-block;
+    display: block;
   }
-  mat-radio-button:hover {
+  .task-list__list:hover {
     background-color: rgb(216, 213, 213);
   }
+  
+  .task-list__link:link, :visited, :active {
+    color: black;
+  }
+
+  .mdc-form-field {
+    vertical-align: -webkit-baseline-middle;
+  }
+
+  .mdc-label {
+    font-size: 16px;
+  }
+
   .mdc-radio {
     display: none;
   }
+
   .mat-mdc-radio-checked {
-    background-color: rgb(235, 191, 69);
+    background-color: $active-task-group;
   }
   .mat-mdc-radio-checked:hover {
-    background-color: rgb(250, 166, 39);
-  }
-  a {
-    width: 220px;
-    height: 30px;
-    display: block;
+    background-color: $active-task-group;
   }
 }
