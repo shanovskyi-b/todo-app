@@ -1,20 +1,20 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { StyleguideComponent } from './styleguide.component';
+import { TodoListComponent } from './todo-list.component';
 import { SharedModule } from '../shared/shared.module';
 import { RouterModule } from '@angular/router';
-import { StyleguideRoutingModule } from './styleguide-routing.module';
+import { TodoListRoutingModule } from './todo-list-routing.module';
 
 
 @NgModule({
   declarations: [
-    StyleguideComponent,
+    TodoListComponent,
   ],
   imports: [
     CommonModule,
     SharedModule,
     RouterModule,
-    StyleguideRoutingModule,
+    TodoListRoutingModule,
   ],
 })
-export class StyleguideModule { }
+export class TodoListModule { }

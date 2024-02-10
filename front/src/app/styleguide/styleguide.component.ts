@@ -4,8 +4,8 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   selector: 'app-styleguide',
   templateUrl: './styleguide.component.html',
   styleUrl: './styleguide.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush, 
 })
 export class StyleguideComponent {
-
+  
 }
