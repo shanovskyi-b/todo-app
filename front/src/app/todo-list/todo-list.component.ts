@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, OnDestro
 import { ApiService } from '../shared/api-service/api.service';
 import { FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { TaskGroups } from '../shared/models/shared.models';
+import { TaskGroupsList, TaskList } from '../shared/models/shared.models';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -12,35 +12,48 @@ import { Subscription } from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TodoListComponent implements OnInit, OnDestroy { 
-  allTaskLists: TaskGroups | undefined;
+  allTaskLists: TaskGroupsList | undefined;
 
   radioBtnGroup: FormGroup = new FormGroup ({
     activeTaskList: new FormControl()
   })
 
+  taskList: TaskList = {tasks: [{id: '', title: 'Let`s Work'}]};
+
   subscriptionToTaskList: Subscription | undefined;
+  subscriptionToTaskGroup: Subscription | undefined;
 
   constructor(private apiService: ApiService, private changeDetectorRef: ChangeDetectorRef, private route: ActivatedRoute) {}
 
   ngOnInit(): void {
-    this.loadTaskLists();
+    this.loadLists();
 
     this.route.queryParams
       .subscribe(params => {
         if (params['list']) {
-          this.radioBtnGroup.controls['activeTaskList'].setValue(params['list'])
+          this.radioBtnGroup.controls['activeTaskList'].setValue(params['list']);
+          this.loadTaskList(params['list']);
         }
       })
   }
 
   ngOnDestroy(): void {
     this.subscriptionToTaskList?.unsubscribe();
+    this.subscriptionToTaskGroup?.unsubscribe();
   }
 
-  private loadTaskLists() {
+  private loadLists() {
     this.subscriptionToTaskList = this.apiService.getLists()
       .subscribe(data => {
         this.allTaskLists = data;
+        this.changeDetectorRef.markForCheck();
+      })
+  }
+
+  loadTaskList(id: string) {
+    this.subscriptionToTaskGroup = this.apiService.getTaskList(id)
+      .subscribe(data => {
+        this.taskList = data;
         this.changeDetectorRef.markForCheck();
       })
   }

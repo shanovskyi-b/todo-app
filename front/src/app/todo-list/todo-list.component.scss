@@ -1,7 +1,14 @@
+.main-screen {
+  display: flex;
+}
+
 .task-list {
-  max-width: 220px;
-  margin-left: 20px;
-  margin-top: 10px;
+  max-width: 260px;
+  padding-left: 20px;
+  padding-top: 10px;
+  padding-right: 15px;
+  height: 100vh;
+  background-color: rgb(247, 246, 246);
 
   &__link {
     :link, :visited, :active {
@@ -10,7 +17,7 @@
   }
 
   &__list {
-    width: 220px;
+    width: 260px;
     height: 30px;
     border-radius: 25px;
     margin-top: 10px;
