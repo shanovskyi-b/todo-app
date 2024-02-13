@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { TaskList } from '../shared/models/shared.models';
+import { TaskList } from '../../../shared/models/shared.models';
 
 @Component({
   selector: 'app-active-task-group',

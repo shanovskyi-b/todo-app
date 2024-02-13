@@ -6,7 +6,6 @@
         [routerLink]="['/todo']"
         [queryParams]="{list: todoList.id}"
         class="task-list__link"
-        (click)="loadTaskList(todoList.id)"
       >
         <mat-radio-button [value]="todoList.id" class="task-list__list">{{todoList.title}}</mat-radio-button>
       </a>

@@ -3,7 +3,7 @@ import { ApiService } from '../shared/api-service/api.service';
 import { FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { TaskGroupsList, TaskList } from '../shared/models/shared.models';
-import { Subscription } from 'rxjs';
+import { Observable, Subject, filter, map, switchMap, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-todo-list',
@@ -11,50 +11,59 @@ import { Subscription } from 'rxjs';
   styleUrl: './todo-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class TodoListComponent implements OnInit, OnDestroy { 
+export class TodoListComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
+
   allTaskLists: TaskGroupsList | undefined;
 
   radioBtnGroup: FormGroup = new FormGroup ({
     activeTaskList: new FormControl()
   })
 
-  taskList: TaskList = {tasks: [{id: '', title: 'Let`s Work'}]};
-
-  subscriptionToTaskList: Subscription | undefined;
-  subscriptionToTaskGroup: Subscription | undefined;
+  taskList: TaskList | undefined;
 
   constructor(private apiService: ApiService, private changeDetectorRef: ChangeDetectorRef, private route: ActivatedRoute) {}
 
   ngOnInit(): void {
     this.loadLists();
 
-    this.route.queryParams
-      .subscribe(params => {
-        if (params['list']) {
-          this.radioBtnGroup.controls['activeTaskList'].setValue(params['list']);
-          this.loadTaskList(params['list']);
-        }
-      })
+    const listId$: Observable<string> = this.route.queryParams.pipe(
+      map((params): string => params['list']),
+    );
+    
+    listId$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(listId => {
+      this.radioBtnGroup.controls['activeTaskList'].setValue(listId);
+      });
+
+    listId$
+      .pipe(
+        takeUntil(this.destroy$),
+        filter(listId => !!listId),
+        switchMap((listId) => this.loadTaskList(listId))
+      )
+      .subscribe(taskList => {
+        this.taskList = taskList;
+        this.changeDetectorRef.markForCheck();
+      });
   }
 
   ngOnDestroy(): void {
-    this.subscriptionToTaskList?.unsubscribe();
-    this.subscriptionToTaskGroup?.unsubscribe();
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
-  private loadLists() {
-    this.subscriptionToTaskList = this.apiService.getLists()
+  private loadLists(): void {
+    this.apiService.getLists()
+      .pipe(takeUntil(this.destroy$))
       .subscribe(data => {
         this.allTaskLists = data;
         this.changeDetectorRef.markForCheck();
-      })
+      });
   }
 
-  loadTaskList(id: string) {
-    this.subscriptionToTaskGroup = this.apiService.getTaskList(id)
-      .subscribe(data => {
-        this.taskList = data;
-        this.changeDetectorRef.markForCheck();
-      })
+  private loadTaskList(id: string): Observable<TaskList> {
+    return this.apiService.getTaskList(id)
   }
 }
