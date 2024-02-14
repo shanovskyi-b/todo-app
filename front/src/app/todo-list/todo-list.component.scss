@@ -1,9 +1,16 @@
-.main-screen {
-  display: flex;
+:host {
   height: 100vh;
+  display: block;
+}
+
+// Couldn't do flex in :host
+.flex-box {
+  height: 100%;
+  display: flex;
 }
 
 .task-list {
+  height: 100%;
   max-width: 260px;
   padding-left: 20px;
   padding-top: 10px;

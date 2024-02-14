@@ -12,8 +12,6 @@ import { Observable, Subject, filter, map, switchMap, takeUntil } from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TodoListComponent implements OnInit, OnDestroy {
-  private destroy$ = new Subject<void>();
-
   allTaskLists: TaskGroupsList | undefined;
 
   radioBtnGroup: FormGroup = new FormGroup ({
@@ -21,6 +19,8 @@ export class TodoListComponent implements OnInit, OnDestroy {
   })
 
   taskList: TaskList | undefined;
+
+  private destroy$ = new Subject<void>();
 
   constructor(private apiService: ApiService, private changeDetectorRef: ChangeDetectorRef, private route: ActivatedRoute) {}
 
@@ -34,7 +34,7 @@ export class TodoListComponent implements OnInit, OnDestroy {
     listId$
       .pipe(takeUntil(this.destroy$))
       .subscribe(listId => {
-      this.radioBtnGroup.controls['activeTaskList'].setValue(listId);
+        this.radioBtnGroup.controls['activeTaskList'].setValue(listId);
       });
 
     listId$
