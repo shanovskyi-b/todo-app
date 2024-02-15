@@ -4,11 +4,13 @@ import { TodoListComponent } from './todo-list.component';
 import { SharedModule } from '../shared/shared.module';
 import { RouterModule } from '@angular/router';
 import { TodoListRoutingModule } from './todo-list-routing.module';
+import { ActiveTaskGroupComponent } from './components/active-task-group/active-task-group.component';
 
 
 @NgModule({
   declarations: [
     TodoListComponent,
+    ActiveTaskGroupComponent
   ],
   imports: [
     CommonModule,
