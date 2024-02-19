@@ -1,11 +1,13 @@
 const express = require('express');
 const cors = require('cors');
 const fs = require("fs");
+const { v4: uuidv4 } = require('uuid');
 
 const app = express();
 const port = 3000;
 
 app.use(cors());
+app.use(express.json())
 
 const ROOT = './tmp/';
 const LISTS_FILE = ROOT + 'lists.txt';
@@ -51,6 +53,41 @@ app.get('/list/', (req, res) => {
     res.json({ lists: JSON.parse(data) });
   });
 });
+
+app.post('/list/', (req, res) => {
+  if (!req.body?.title || typeof req.body.title !== 'string') {
+    res.statusCode = 500;
+    res.json({ error: '"Title" is invalid' });
+    return;
+  }
+
+  fs.readFile(LISTS_FILE, 'utf8', (err, data) => {
+    if (err) {
+      res.statusCode = 500;
+      res.json({ error: err });
+      return;
+    }
+
+    let lists = JSON.parse(data);
+    const newList = { id: uuidv4(), title: req.body.title };
+
+    lists = [
+      ...lists,
+      newList
+    ];
+
+    fs.writeFile(LISTS_FILE, JSON.stringify(lists), (err, data) => {
+      if (err) {
+        res.statusCode = 500;
+        res.json({ error: err });
+        return;
+      }
+
+      res.statusCode = 200;
+      res.json({ list: newList });
+    });
+  });
+})
 
 app.get('/list/:id', (req, res) => {
   const listId = req.params.id;
