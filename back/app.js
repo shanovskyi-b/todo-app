@@ -1,45 +1,89 @@
 const express = require('express');
 const cors = require('cors');
+const fs = require("fs");
+
 const app = express();
 const port = 3000;
 
 app.use(cors());
 
-const ALL_LISTS = [
-  { id: 'list-01', title: 'Home' }, 
-  { id: 'list-02', title: 'Work' }
-];
+const ROOT = './tmp/';
+const LISTS_FILE = ROOT + 'lists.txt';
+const TASKS_FILE = ROOT + 'tasks.txt';
 
-const TASKS = {
-  'list-01': [
-    { id: 'task-01', title: 'Buy bananas' },
-    { id: 'task-02', title: 'Vacuum' },
-  ],
-  'list-02': [
-    { id: 'task-03', title: 'Check Friday\'s email regarding prod issue' },
-    { id: 'task-04', title: 'Write to Maria to heck her appoinment' },
-  ],
+if (!fs.existsSync(ROOT)){
+  fs.mkdirSync(ROOT);
+}
+
+if (!fs.existsSync(LISTS_FILE)) {
+  const ALL_LISTS = [
+    { id: 'list-01', title: 'Home' }, 
+    { id: 'list-02', title: 'Work' }
+  ];
+  
+  fs.writeFileSync(LISTS_FILE, JSON.stringify(ALL_LISTS));
+}
+
+if (!fs.existsSync(TASKS_FILE)) {
+  const TASKS = {
+    'list-01': [
+      { id: 'task-01', title: 'Buy bananas' },
+      { id: 'task-02', title: 'Vacuum' },
+    ],
+    'list-02': [
+      { id: 'task-03', title: 'Check Friday\'s email regarding prod issue' },
+      { id: 'task-04', title: 'Write to Maria to heck her appoinment' },
+    ],
+  }
+  
+  fs.writeFileSync(TASKS_FILE, JSON.stringify(TASKS));
 }
 
 app.get('/list/', (req, res) => {
-  res.statusCode = 200;
-  res.json({ lists: ALL_LISTS });
+  fs.readFile(LISTS_FILE, 'utf8', (err, data) => {
+    if (err) {
+      res.statusCode = 500;
+      res.json({ error: err });
+      return;
+    }
+
+    res.statusCode = 200;
+    res.json({ lists: JSON.parse(data) });
+  });
 });
 
 app.get('/list/:id', (req, res) => {
   const listId = req.params.id;
-  if (!ALL_LISTS.find(list => list.id === listId)) {
-    res.statusCode = 400;
   
-    res.json({ error: `No list found by id: ${listId}` });
-    return;
-  }
+  fs.readFile(LISTS_FILE, 'utf8', (err, data) => {
+    if (err) {
+      res.statusCode = 500;
+      res.json({ error: err });
+      return;
+    }
 
-  const listTasks = TASKS[listId] ?? [];
+    const lists = JSON.parse(data);
 
-  res.statusCode = 200;
-  
-  res.json({ tasks: listTasks });
+    if (!lists.find(list => list.id === listId)) {
+      res.statusCode = 400;
+    
+      res.json({ error: `No list found by id: ${listId}` });
+      return;
+    }
+
+    fs.readFile(TASKS_FILE, 'utf8', (err, data) => {
+      if (err) {
+        res.statusCode = 500;
+        res.json({ error: err });
+        return;
+      }
+      const tasks = JSON.parse(data);
+      const listTasks = tasks[listId] ?? [];
+    
+      res.statusCode = 200;
+      res.json({ tasks: listTasks });
+    });
+  });
 });
 
 app.listen(port, () => {
