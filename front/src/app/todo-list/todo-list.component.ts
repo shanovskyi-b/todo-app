@@ -12,7 +12,7 @@ import { Observable, Subject, filter, map, switchMap, takeUntil } from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TodoListComponent implements OnInit, OnDestroy {
-  @ViewChild('groupinp') grpInp: ElementRef | undefined;
+  @ViewChild('newTaskGroupFormField') newTaskGroupFormField: ElementRef | undefined;
 
   allTaskLists: TaskGroupsList | undefined;
 
@@ -20,13 +20,14 @@ export class TodoListComponent implements OnInit, OnDestroy {
     activeTaskList: new FormControl()
   })
   
-  closeInput: boolean = true;
+  isInputVisible: boolean = true;
 
+  //I can’t fix it now, I suggest we discuss it later 
   inputText: string = '';
 
   taskList: TaskList | undefined;
 
-  load: boolean = false;
+  isResultLoading: boolean = false;
 
   private destroy$ = new Subject<void>();
 
@@ -62,30 +63,30 @@ export class TodoListComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  displayInput(): void {
-    this.closeInput = false;
+  showNewTaskGroupFormField(): void {
+    this.isInputVisible = false;
     this.changeDetectorRef.detectChanges()
-    this.grpInp?.nativeElement.focus();
+    this.newTaskGroupFormField?.nativeElement.focus();
   }
 
-  hideInput(): void {
-    this.closeInput = true;
+  hideNewTaskGroupFormField(): void {
+    this.isInputVisible = true;
   }
 
-  createNewTskGroup(name: string): void {
-    this.load = true
+  createNewTaskGroup(name: string): void {
     if (name != '') {
+      this.isResultLoading = true;
       this.apiService.createTaskGroup(name)
         .pipe(takeUntil(this.destroy$))
         .subscribe(data => {
-          let list = data.list.id;
+          const list = data.list.id;
           this.changeDetectorRef.markForCheck();
           this.loadLists();
-          this.router.navigate([], {queryParams: {list}})
+          this.router.navigate([], {queryParams: {list}});
+          this.isResultLoading = false;
         })
     }
-    this.closeInput = true;
-    this.load = false;
+    this.isInputVisible = true;
     this.inputText = '';
   }
 
