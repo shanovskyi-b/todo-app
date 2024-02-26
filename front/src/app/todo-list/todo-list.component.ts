@@ -23,7 +23,7 @@ export class TodoListComponent implements OnInit, OnDestroy {
   isInputVisible: boolean = true;
 
   //I can’t fix it now, I suggest we discuss it later 
-  inputText: string = '';
+  newTaskGroupName: string = '';
 
   taskList: TaskList | undefined;
 
@@ -74,20 +74,24 @@ export class TodoListComponent implements OnInit, OnDestroy {
   }
 
   createNewTaskGroup(name: string): void {
-    if (name != '') {
-      this.isResultLoading = true;
-      this.apiService.createTaskGroup(name)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe(data => {
-          const list = data.list.id;
-          this.changeDetectorRef.markForCheck();
-          this.loadLists();
-          this.router.navigate([], {queryParams: {list}});
-          this.isResultLoading = false;
-        })
+    if (!name) {
+      return;
     }
+
+    this.isResultLoading = true;
+
+    this.apiService.createTaskGroup(name)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(data => {
+        const list = data.list.id;
+        this.changeDetectorRef.markForCheck();
+        this.loadLists();
+        this.router.navigate([], {queryParams: {list}});
+        this.isResultLoading = false;
+      })
+
     this.isInputVisible = true;
-    this.inputText = '';
+    this.newTaskGroupName = '';
   }
 
   private loadLists(): void {

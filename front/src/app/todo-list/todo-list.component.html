@@ -8,21 +8,24 @@
     >
       <mat-radio-button [value]="todoList.id" class="task-list__list">{{todoList.title}}</mat-radio-button>
     </a>
-    <button [ngClass]="{'hide-element': !isInputVisible}" mat-icon-button class="task-list__show-input" (click)="showNewTaskGroupFormField()">
+    <button [ngClass]="{'hide-element': !isInputVisible}" mat-icon-button class="task-list__add" (click)="showNewTaskGroupFormField()">
       <mat-icon>add</mat-icon>
     </button>
     <form [ngClass]="{'hide-element': isInputVisible}" class="new-task-group">
       <mat-form-field class="new-task-group__wrapper">
         <input 
-          [(ngModel)]="inputText"
-          #newTaskGroupFormField type="text" matInput name="newTaskGroupInput" class="new-task-group__input" 
-          (keydown.enter)="createNewTaskGroup(inputText)"
+          [(ngModel)]="newTaskGroupName"
+          #newTaskGroupFormField 
+          type="text" matInput 
+          name="newTaskGroupInput" 
+          class="new-task-group__input" 
+          (keydown.enter)="createNewTaskGroup(newTaskGroupName)"
         >
-        <button [ngClass]="{'hide-element': isInputVisible}" mat-icon-button class="new-task-group__hide-input" (click)="hideNewTaskGroupFormField()">
+        <button [ngClass]="{'hide-element': isInputVisible}" mat-icon-button class="new-task-group__cancel" (click)="hideNewTaskGroupFormField()">
           <mat-icon>cancel</mat-icon>
         </button>
       </mat-form-field>
-      <button mat-icon-button class="new-task-group__confirm" (click)="createNewTaskGroup(inputText)">
+      <button mat-icon-button class="new-task-group__confirm" (click)="createNewTaskGroup(newTaskGroupName)">
         <mat-icon>done</mat-icon>
       </button>
     </form>
