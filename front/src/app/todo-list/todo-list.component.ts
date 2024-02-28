@@ -20,9 +20,8 @@ export class TodoListComponent implements OnInit, OnDestroy {
     activeTaskList: new FormControl()
   })
   
-  isInputVisible: boolean = true;
+  isNewTaskGroupFormFieldVisible: boolean = false;
 
-  //I can’t fix it now, I suggest we discuss it later 
   newTaskGroupName: string = '';
 
   taskList: TaskList | undefined;
@@ -64,13 +63,13 @@ export class TodoListComponent implements OnInit, OnDestroy {
   }
 
   showNewTaskGroupFormField(): void {
-    this.isInputVisible = false;
+    this.isNewTaskGroupFormFieldVisible = true;
     this.changeDetectorRef.detectChanges()
     this.newTaskGroupFormField?.nativeElement.focus();
   }
 
   hideNewTaskGroupFormField(): void {
-    this.isInputVisible = true;
+    this.isNewTaskGroupFormFieldVisible = false;
   }
 
   createNewTaskGroup(name: string): void {
@@ -90,7 +89,7 @@ export class TodoListComponent implements OnInit, OnDestroy {
         this.isResultLoading = false;
       })
 
-    this.isInputVisible = true;
+    this.isNewTaskGroupFormFieldVisible = false;
     this.newTaskGroupName = '';
   }
 
