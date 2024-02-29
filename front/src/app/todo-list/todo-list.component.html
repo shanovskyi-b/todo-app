@@ -8,7 +8,33 @@
     >
       <mat-radio-button [value]="todoList.id" class="task-list__list">{{todoList.title}}</mat-radio-button>
     </a>
+    <button [ngClass]="{'hide-element': isNewTaskGroupFormFieldVisible}" mat-icon-button class="task-list__add" (click)="showNewTaskGroupFormField()">
+      <mat-icon>add</mat-icon>
+    </button>
+    <form [ngClass]="{'hide-element': !isNewTaskGroupFormFieldVisible}" class="new-task-group">
+      <mat-form-field class="new-task-group__wrapper">
+        <input 
+          [(ngModel)]="newTaskGroupName"
+          #newTaskGroupFormField 
+          type="text" 
+          matInput 
+          name="newTaskGroupInput" 
+          class="new-task-group__input" 
+          (keydown.enter)="createNewTaskGroup(newTaskGroupName)"
+        >
+        <button [ngClass]="{'hide-element': !isNewTaskGroupFormFieldVisible}" mat-icon-button class="new-task-group__cancel" (click)="hideNewTaskGroupFormField()">
+          <mat-icon>cancel</mat-icon>
+        </button>
+      </mat-form-field>
+      <button mat-icon-button class="new-task-group__confirm" (click)="createNewTaskGroup(newTaskGroupName)">
+        <mat-icon>done</mat-icon>
+      </button>
+    </form>
   </mat-radio-group>
 </div>
 
 <app-active-task-group [taskList]="taskList"></app-active-task-group>
+
+<div [ngClass]="{'loading-screen': isResultLoading}">
+  <img class="loading-spinner" src="/assets/svg/loading-screen.svg" alt="">
+</div>

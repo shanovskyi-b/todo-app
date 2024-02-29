@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { ApiService } from '../shared/api-service/api.service';
 import { FormControl, FormGroup } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { TaskGroupsList, TaskList } from '../shared/models/shared.models';
 import { Observable, Subject, filter, map, switchMap, takeUntil } from 'rxjs';
 
@@ -12,17 +12,25 @@ import { Observable, Subject, filter, map, switchMap, takeUntil } from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TodoListComponent implements OnInit, OnDestroy {
+  @ViewChild('newTaskGroupFormField') newTaskGroupFormField: ElementRef | undefined;
+
   allTaskLists: TaskGroupsList | undefined;
 
   radioBtnGroup: FormGroup = new FormGroup ({
     activeTaskList: new FormControl()
   })
+  
+  isNewTaskGroupFormFieldVisible: boolean = false;
+
+  newTaskGroupName: string = '';
 
   taskList: TaskList | undefined;
 
+  isResultLoading: boolean = false;
+
   private destroy$ = new Subject<void>();
 
-  constructor(private apiService: ApiService, private changeDetectorRef: ChangeDetectorRef, private route: ActivatedRoute) {}
+  constructor(private apiService: ApiService, private changeDetectorRef: ChangeDetectorRef, private route: ActivatedRoute, private router: Router) {}
 
   ngOnInit(): void {
     this.loadLists();
@@ -41,7 +49,7 @@ export class TodoListComponent implements OnInit, OnDestroy {
       .pipe(
         takeUntil(this.destroy$),
         filter(listId => !!listId),
-        switchMap((listId) => this.loadTaskList(listId))
+        switchMap((listId) => this.loadTaskList(listId)),
       )
       .subscribe(taskList => {
         this.taskList = taskList;
@@ -52,6 +60,37 @@ export class TodoListComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  showNewTaskGroupFormField(): void {
+    this.isNewTaskGroupFormFieldVisible = true;
+    this.changeDetectorRef.detectChanges()
+    this.newTaskGroupFormField?.nativeElement.focus();
+  }
+
+  hideNewTaskGroupFormField(): void {
+    this.isNewTaskGroupFormFieldVisible = false;
+  }
+
+  createNewTaskGroup(name: string): void {
+    if (!name) {
+      return;
+    }
+
+    this.isResultLoading = true;
+
+    this.apiService.createTaskGroup(name)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(data => {
+        const list = data.list.id;
+        this.changeDetectorRef.markForCheck();
+        this.loadLists();
+        this.router.navigate([], {queryParams: {list}});
+        this.isResultLoading = false;
+      })
+
+    this.isNewTaskGroupFormFieldVisible = false;
+    this.newTaskGroupName = '';
   }
 
   private loadLists(): void {

@@ -15,3 +15,7 @@ export interface Tasks {
 export interface TaskList {
   tasks: Tasks[];
 }
+
+export interface NewTaskList {
+  list: TaskGroup;
+}
