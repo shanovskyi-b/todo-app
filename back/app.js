@@ -87,7 +87,7 @@ app.post('/list/', (req, res) => {
       res.json({ list: newList });
     });
   });
-})
+});
 
 app.get('/list/:id', (req, res) => {
   const listId = req.params.id;
@@ -119,6 +119,57 @@ app.get('/list/:id', (req, res) => {
     
       res.statusCode = 200;
       res.json({ tasks: listTasks });
+    });
+  });
+});
+
+app.put('/list/:id', (req, res) => {
+  const listId = req.params.id;
+
+  if (
+    !req.body?.list 
+    || !req.body.list.title 
+    || typeof req.body.list.title !== 'string'
+    || req.body.list.id !== listId
+  ) {
+    res.statusCode = 500;
+    res.json({ error: 'List is invalid' });
+    return;
+  }
+
+  fs.readFile(LISTS_FILE, 'utf8', (err, data) => {
+    if (err) {
+      res.statusCode = 500;
+      res.json({ error: err });
+      return;
+    }
+
+    let lists = JSON.parse(data);
+    let editedList = lists.find(list => list.id === listId);
+
+    if (!editedList) {
+      res.statusCode = 400;
+    
+      res.json({ error: `No list found by id: ${listId}` });
+      return;
+    }
+
+    editedList = req.body.list;
+    lists = lists.map(
+      list => list.id === listId 
+        ? editedList
+        : list
+    );
+
+    fs.writeFile(LISTS_FILE, JSON.stringify(lists), (err, data) => {
+      if (err) {
+        res.statusCode = 500;
+        res.json({ error: err });
+        return;
+      }
+
+      res.statusCode = 200;
+      res.json({ list: editedList });
     });
   });
 });
