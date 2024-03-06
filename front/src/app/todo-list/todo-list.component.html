@@ -1,12 +1,56 @@
 <div [formGroup]="radioBtnGroup" class="task-list">
   <mat-radio-group formControlName="activeTaskList" class="task-list__group">
     <a
-      *ngFor="let todoList of allTaskLists?.lists" 
+      *ngFor="let todoList of allTaskLists?.lists; let taskListIndex = index" 
       [routerLink]="['/todo']"
       [queryParams]="{list: todoList.id}"
       class="task-list__link"
     >
-      <mat-radio-button [value]="todoList.id" class="task-list__list">{{todoList.title}}</mat-radio-button>
+      <mat-radio-button [value]="todoList.id" class="task-list__list">
+        <div class="task-list__task-group">
+          <span [ngClass]="{'hide-element': activeTaskGroupId == taskListIndex}">
+            {{todoList.title}}
+          </span>
+          <input
+            [ngClass]="{'hide-element': activeTaskGroupId != taskListIndex}"
+            #renameTaskGroupFormField
+            matInput
+            name="input{{taskListIndex}}"  
+            type="text"
+            (keydown.enter)="renameTaskGroup(todoList.id, renameTaskGroupFormField.value)"
+            (blur)="activeTaskGroupId = undefined"
+          >
+        </div>
+        <div>
+          <button 
+            [ngClass]="{'hide-element': activeTaskGroupId == taskListIndex}" 
+            [matMenuTriggerRestoreFocus]="false" 
+            [matMenuTriggerFor]="menu" 
+            mat-icon-button
+            disableRipple="true"
+            class="task-list__showing-control-menu"
+          >
+            <mat-icon>more_horiz</mat-icon>
+          </button>
+          <button 
+            [ngClass]="{'hide-element': activeTaskGroupId != taskListIndex}" 
+            mat-icon-button 
+            class="task-list__rename"
+            disableRipple="true"
+            (mousedown)="renameTaskGroup(todoList.id, renameTaskGroupFormField.value)"
+          >
+            <mat-icon>done</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu">
+            <button 
+              mat-menu-item
+              (click)="showRenameTaskGroupInput(taskListIndex, todoList.title, renameTaskGroupFormField)"
+            >
+              Rename
+            </button>
+          </mat-menu>
+        </div>
+      </mat-radio-button>
     </a>
     <button [ngClass]="{'hide-element': isNewTaskGroupFormFieldVisible}" mat-icon-button class="task-list__add" (click)="showNewTaskGroupFormField()">
       <mat-icon>add</mat-icon>
@@ -14,19 +58,19 @@
     <form [ngClass]="{'hide-element': !isNewTaskGroupFormFieldVisible}" class="new-task-group">
       <mat-form-field class="new-task-group__wrapper">
         <input 
-          [(ngModel)]="newTaskGroupName"
-          #newTaskGroupFormField 
+          #newTaskGroupFormField
           type="text" 
           matInput 
           name="newTaskGroupInput" 
-          class="new-task-group__input" 
-          (keydown.enter)="createNewTaskGroup(newTaskGroupName)"
+          class="new-task-group__input"
+          (blur)="hideNewTaskGroupFormField()"
+          (keydown.enter)="createNewTaskGroup(newTaskGroupFormField.value)"
         >
         <button [ngClass]="{'hide-element': !isNewTaskGroupFormFieldVisible}" mat-icon-button class="new-task-group__cancel" (click)="hideNewTaskGroupFormField()">
-          <mat-icon>cancel</mat-icon>
+          <mat-icon>clear</mat-icon>
         </button>
       </mat-form-field>
-      <button mat-icon-button class="new-task-group__confirm" (click)="createNewTaskGroup(newTaskGroupName)">
+      <button mat-icon-button class="new-task-group__confirm" (mousedown)="createNewTaskGroup(newTaskGroupFormField.value)">
         <mat-icon>done</mat-icon>
       </button>
     </form>

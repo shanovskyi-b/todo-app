@@ -13,18 +13,18 @@ import { Observable, Subject, filter, map, switchMap, takeUntil } from 'rxjs';
 })
 export class TodoListComponent implements OnInit, OnDestroy {
   @ViewChild('newTaskGroupFormField') newTaskGroupFormField: ElementRef | undefined;
-
+  
   allTaskLists: TaskGroupsList | undefined;
 
   radioBtnGroup: FormGroup = new FormGroup ({
     activeTaskList: new FormControl()
   })
-  
-  isNewTaskGroupFormFieldVisible: boolean = false;
 
-  newTaskGroupName: string = '';
+  activeTaskGroupId: number | undefined; 
 
   taskList: TaskList | undefined;
+
+  isNewTaskGroupFormFieldVisible: boolean = false;
 
   isResultLoading: boolean = false;
 
@@ -62,6 +62,23 @@ export class TodoListComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
+  showRenameTaskGroupInput(taskListIndex: number, taskListTitle: string, renameTaskListInput: HTMLInputElement): void {
+    this.activeTaskGroupId = taskListIndex;
+    renameTaskListInput.value = taskListTitle;
+    this.changeDetectorRef.detectChanges();
+    renameTaskListInput.focus();
+  }
+
+  renameTaskGroup(id: string, title: string): void {
+    this.apiService.renameTaskGroup(id, title)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(data => {
+        this.changeDetectorRef.markForCheck();
+        this.loadLists();
+        this.activeTaskGroupId = undefined;
+      });
+  }
+
   showNewTaskGroupFormField(): void {
     this.isNewTaskGroupFormFieldVisible = true;
     this.changeDetectorRef.detectChanges()
@@ -90,7 +107,6 @@ export class TodoListComponent implements OnInit, OnDestroy {
       })
 
     this.isNewTaskGroupFormFieldVisible = false;
-    this.newTaskGroupName = '';
   }
 
   private loadLists(): void {

@@ -21,4 +21,8 @@ export class ApiService {
   createTaskGroup(task: string) {
     return this.http.post<NewTaskList>(environment.apiUrl + '/list/', { title: task });
   }
+
+  renameTaskGroup(id: string, title: string) {
+    return this.http.put(environment.apiUrl + `/list/${id}`, { list: { id: id, title: title }});
+  }
 }
