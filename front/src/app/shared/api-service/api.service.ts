@@ -23,6 +23,6 @@ export class ApiService {
   }
 
   renameTaskGroup(id: string, title: string) {
-    return this.http.put(environment.apiUrl + `/list/${id}`, { list: { id: id, title: title }});
+    return this.http.put<NewTaskList>(environment.apiUrl + `/list/${id}`, { list: { id: id, title: title }});
   }
 }

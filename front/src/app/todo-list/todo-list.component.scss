@@ -13,7 +13,10 @@
 
   &__link {
     position: relative;
-    :link, :visited, :active {
+    &:focus-within .task-list__showing-control-menu, .task-list__rename {
+      visibility: visible;
+    }
+    &:link, &:visited, &:active {
       color: black;
     }
   }
@@ -25,8 +28,7 @@
     position: absolute;
     top: 10px;
     right: 2px;
-    opacity: 0;
-
+    visibility: hidden;
     ::ng-deep {
       .mat-mdc-button-touch-target {
         height: 30px;
@@ -46,7 +48,7 @@
       background-color: rgb(216, 213, 213);
     }
     &:hover .task-list__showing-control-menu, .task-list__rename {
-      opacity: 1;
+      visibility: visible;
     }
   }
 

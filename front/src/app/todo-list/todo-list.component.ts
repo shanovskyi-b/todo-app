@@ -20,7 +20,7 @@ export class TodoListComponent implements OnInit, OnDestroy {
     activeTaskList: new FormControl()
   })
 
-  activeTaskGroupId: number | undefined; 
+  selectedTaskGroupIndex: number | undefined; 
 
   taskList: TaskList | undefined;
 
@@ -62,8 +62,19 @@ export class TodoListComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
+  stopPropagation(event: Event) {
+    event.stopPropagation();
+  }
+
+  onRenameTaskGroupInputBlur() {
+    setTimeout(() => {
+      this.selectedTaskGroupIndex = undefined;
+      this.changeDetectorRef.markForCheck();
+    }, 150)
+  }
+
   showRenameTaskGroupInput(taskListIndex: number, taskListTitle: string, renameTaskListInput: HTMLInputElement): void {
-    this.activeTaskGroupId = taskListIndex;
+    this.selectedTaskGroupIndex = taskListIndex;
     renameTaskListInput.value = taskListTitle;
     this.changeDetectorRef.detectChanges();
     renameTaskListInput.focus();
@@ -72,10 +83,10 @@ export class TodoListComponent implements OnInit, OnDestroy {
   renameTaskGroup(id: string, title: string): void {
     this.apiService.renameTaskGroup(id, title)
       .pipe(takeUntil(this.destroy$))
-      .subscribe(data => {
+      .subscribe(() => {
         this.changeDetectorRef.markForCheck();
         this.loadLists();
-        this.activeTaskGroupId = undefined;
+        this.selectedTaskGroupIndex = undefined;
       });
   }
 
@@ -86,7 +97,10 @@ export class TodoListComponent implements OnInit, OnDestroy {
   }
 
   hideNewTaskGroupFormField(): void {
-    this.isNewTaskGroupFormFieldVisible = false;
+    setTimeout(() => {
+      this.isNewTaskGroupFormFieldVisible = false;
+      this.changeDetectorRef.markForCheck();
+    }, 150)
   }
 
   createNewTaskGroup(name: string): void {

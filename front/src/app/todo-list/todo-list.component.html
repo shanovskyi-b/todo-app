@@ -8,32 +8,34 @@
     >
       <mat-radio-button [value]="todoList.id" class="task-list__list">
         <div class="task-list__task-group">
-          <span [ngClass]="{'hide-element': activeTaskGroupId == taskListIndex}">
+          <span *ngIf="selectedTaskGroupIndex !== taskListIndex">
             {{todoList.title}}
           </span>
           <input
-            [ngClass]="{'hide-element': activeTaskGroupId != taskListIndex}"
+            [ngClass]="{'hide-element': selectedTaskGroupIndex !== taskListIndex}"
             #renameTaskGroupFormField
             matInput
             name="input{{taskListIndex}}"  
             type="text"
             (keydown.enter)="renameTaskGroup(todoList.id, renameTaskGroupFormField.value)"
-            (blur)="activeTaskGroupId = undefined"
+            (blur)="onRenameTaskGroupInputBlur()"
+            (click)="stopPropagation($event); false"
           >
         </div>
         <div>
           <button 
-            [ngClass]="{'hide-element': activeTaskGroupId == taskListIndex}" 
+            *ngIf="selectedTaskGroupIndex !== taskListIndex" 
             [matMenuTriggerRestoreFocus]="false" 
             [matMenuTriggerFor]="menu" 
             mat-icon-button
             disableRipple="true"
             class="task-list__showing-control-menu"
+            (click)="stopPropagation($event); false"
           >
             <mat-icon>more_horiz</mat-icon>
           </button>
           <button 
-            [ngClass]="{'hide-element': activeTaskGroupId != taskListIndex}" 
+            *ngIf="selectedTaskGroupIndex === taskListIndex"
             mat-icon-button 
             class="task-list__rename"
             disableRipple="true"
@@ -42,7 +44,7 @@
             <mat-icon>done</mat-icon>
           </button>
           <mat-menu #menu="matMenu">
-            <button 
+            <button
               mat-menu-item
               (click)="showRenameTaskGroupInput(taskListIndex, todoList.title, renameTaskGroupFormField)"
             >
@@ -52,12 +54,12 @@
         </div>
       </mat-radio-button>
     </a>
-    <button [ngClass]="{'hide-element': isNewTaskGroupFormFieldVisible}" mat-icon-button class="task-list__add" (click)="showNewTaskGroupFormField()">
+    <button *ngIf="!isNewTaskGroupFormFieldVisible" mat-icon-button class="task-list__add" (click)="showNewTaskGroupFormField()">
       <mat-icon>add</mat-icon>
     </button>
-    <form [ngClass]="{'hide-element': !isNewTaskGroupFormFieldVisible}" class="new-task-group">
+    <form *ngIf="isNewTaskGroupFormFieldVisible" class="new-task-group">
       <mat-form-field class="new-task-group__wrapper">
-        <input 
+        <input
           #newTaskGroupFormField
           type="text" 
           matInput 
@@ -66,7 +68,7 @@
           (blur)="hideNewTaskGroupFormField()"
           (keydown.enter)="createNewTaskGroup(newTaskGroupFormField.value)"
         >
-        <button [ngClass]="{'hide-element': !isNewTaskGroupFormFieldVisible}" mat-icon-button class="new-task-group__cancel" (click)="hideNewTaskGroupFormField()">
+        <button *ngIf="isNewTaskGroupFormFieldVisible" mat-icon-button class="new-task-group__cancel" (click)="hideNewTaskGroupFormField()">
           <mat-icon>clear</mat-icon>
         </button>
       </mat-form-field>
