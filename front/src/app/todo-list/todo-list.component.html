@@ -39,7 +39,7 @@
             mat-icon-button 
             class="task-list__rename"
             disableRipple="true"
-            (mousedown)="renameTaskGroup(todoList.id, renameTaskGroupFormField.value)"
+            (click)="renameTaskGroup(todoList.id, renameTaskGroupFormField.value); stopPropagation($event); false"
           >
             <mat-icon>done</mat-icon>
           </button>
@@ -72,7 +72,7 @@
           <mat-icon>clear</mat-icon>
         </button>
       </mat-form-field>
-      <button mat-icon-button class="new-task-group__confirm" (mousedown)="createNewTaskGroup(newTaskGroupFormField.value)">
+      <button mat-icon-button class="new-task-group__confirm" (click)="createNewTaskGroup(newTaskGroupFormField.value)">
         <mat-icon>done</mat-icon>
       </button>
     </form>
