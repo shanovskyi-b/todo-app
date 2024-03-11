@@ -16,6 +16,9 @@
     &:focus-within .task-list__showing-control-menu, .task-list__rename {
       visibility: visible;
     }
+    &:hover .task-list__showing-control-menu, .task-list__rename {
+      visibility: visible;
+    }
     &:link, &:visited, &:active {
       color: black;
     }
@@ -46,9 +49,6 @@
     display: block;
     &:hover {
       background-color: rgb(216, 213, 213);
-    }
-    &:hover .task-list__showing-control-menu, .task-list__rename {
-      visibility: visible;
     }
   }
 

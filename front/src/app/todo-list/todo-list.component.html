@@ -19,7 +19,7 @@
             type="text"
             (keydown.enter)="renameTaskGroup(todoList.id, renameTaskGroupFormField.value)"
             (blur)="onRenameTaskGroupInputBlur()"
-            (click)="stopPropagation($event); false"
+            (click)="stopPropagation($event)"
           >
         </div>
         <div>
@@ -30,7 +30,7 @@
             mat-icon-button
             disableRipple="true"
             class="task-list__showing-control-menu"
-            (click)="stopPropagation($event); false"
+            (click)="stopPropagation($event)"
           >
             <mat-icon>more_horiz</mat-icon>
           </button>
@@ -39,7 +39,7 @@
             mat-icon-button 
             class="task-list__rename"
             disableRipple="true"
-            (click)="renameTaskGroup(todoList.id, renameTaskGroupFormField.value); stopPropagation($event); false"
+            (click)="renameTaskGroup(todoList.id, renameTaskGroupFormField.value); stopPropagation($event)"
           >
             <mat-icon>done</mat-icon>
           </button>

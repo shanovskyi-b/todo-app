@@ -62,13 +62,23 @@ export class TodoListComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  stopPropagation(event: Event) {
+  stopPropagation(event: Event): boolean {
     event.stopPropagation();
+    return false;
   }
 
-  onRenameTaskGroupInputBlur() {
+
+  // blur is triggered before the button, I had to make a slight delay in these two functions
+  onRenameTaskGroupInputBlur(): void {
     setTimeout(() => {
       this.selectedTaskGroupIndex = undefined;
+      this.changeDetectorRef.markForCheck();
+    }, 150)
+  }
+
+  hideNewTaskGroupFormField(): void {
+    setTimeout(() => {
+      this.isNewTaskGroupFormFieldVisible = false;
       this.changeDetectorRef.markForCheck();
     }, 150)
   }
@@ -94,13 +104,6 @@ export class TodoListComponent implements OnInit, OnDestroy {
     this.isNewTaskGroupFormFieldVisible = true;
     this.changeDetectorRef.detectChanges()
     this.newTaskGroupFormField?.nativeElement.focus();
-  }
-
-  hideNewTaskGroupFormField(): void {
-    setTimeout(() => {
-      this.isNewTaskGroupFormFieldVisible = false;
-      this.changeDetectorRef.markForCheck();
-    }, 150)
   }
 
   createNewTaskGroup(name: string): void {
