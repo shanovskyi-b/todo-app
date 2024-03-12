@@ -12,8 +12,30 @@
   background-color: rgb(247, 246, 246);
 
   &__link {
-    :link, :visited, :active {
+    position: relative;
+    &:hover, &:focus-within {
+      .task-list__showing-control-menu, .task-list__rename {
+        visibility: visible;
+      }
+    }
+    &:link, &:visited, &:active {
       color: black;
+    }
+  }
+
+  &__showing-control-menu, &__rename {
+    height: 30px;
+    width: 30px;
+    padding: 4px;
+    position: absolute;
+    top: 10px;
+    right: 2px;
+    visibility: hidden;
+    ::ng-deep {
+      .mat-mdc-button-touch-target {
+        height: 30px;
+        width: 30px;
+      }
     }
   }
 

@@ -13,18 +13,18 @@ import { Observable, Subject, filter, map, switchMap, takeUntil } from 'rxjs';
 })
 export class TodoListComponent implements OnInit, OnDestroy {
   @ViewChild('newTaskGroupFormField') newTaskGroupFormField: ElementRef | undefined;
-
+  
   allTaskLists: TaskGroupsList | undefined;
 
   radioBtnGroup: FormGroup = new FormGroup ({
     activeTaskList: new FormControl()
   })
-  
-  isNewTaskGroupFormFieldVisible: boolean = false;
 
-  newTaskGroupName: string = '';
+  selectedTaskGroupIndex: number | undefined; 
 
   taskList: TaskList | undefined;
+
+  isNewTaskGroupFormFieldVisible: boolean = false;
 
   isResultLoading: boolean = false;
 
@@ -62,14 +62,48 @@ export class TodoListComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
+  stopPropagation(event: Event): boolean {
+    event.stopPropagation();
+    return false;
+  }
+
+
+  // blur is triggered before the button, I had to make a slight delay in these two functions
+  onRenameTaskGroupInputBlur(): void {
+    setTimeout(() => {
+      this.selectedTaskGroupIndex = undefined;
+      this.changeDetectorRef.markForCheck();
+    }, 150)
+  }
+
+  hideNewTaskGroupFormField(): void {
+    setTimeout(() => {
+      this.isNewTaskGroupFormFieldVisible = false;
+      this.changeDetectorRef.markForCheck();
+    }, 150)
+  }
+
+  showRenameTaskGroupInput(taskListIndex: number, taskListTitle: string, renameTaskListInput: HTMLInputElement): void {
+    this.selectedTaskGroupIndex = taskListIndex;
+    renameTaskListInput.value = taskListTitle;
+    this.changeDetectorRef.detectChanges();
+    renameTaskListInput.focus();
+  }
+
+  renameTaskGroup(id: string, title: string): void {
+    this.apiService.renameTaskGroup(id, title)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.changeDetectorRef.markForCheck();
+        this.loadLists();
+        this.selectedTaskGroupIndex = undefined;
+      });
+  }
+
   showNewTaskGroupFormField(): void {
     this.isNewTaskGroupFormFieldVisible = true;
     this.changeDetectorRef.detectChanges()
     this.newTaskGroupFormField?.nativeElement.focus();
-  }
-
-  hideNewTaskGroupFormField(): void {
-    this.isNewTaskGroupFormFieldVisible = false;
   }
 
   createNewTaskGroup(name: string): void {
@@ -90,7 +124,6 @@ export class TodoListComponent implements OnInit, OnDestroy {
       })
 
     this.isNewTaskGroupFormFieldVisible = false;
-    this.newTaskGroupName = '';
   }
 
   private loadLists(): void {
