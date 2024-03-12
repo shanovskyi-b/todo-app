@@ -174,6 +174,43 @@ app.put('/list/:id', (req, res) => {
   });
 });
 
+app.delete('/list/:id', (req, res) => {
+  const listId = req.params.id;
+
+  fs.readFile(LISTS_FILE, 'utf8', (err, data) => {
+    if (err) {
+      res.statusCode = 500;
+      res.json({ error: err });
+      return;
+    }
+
+    let lists = JSON.parse(data);
+    let deletedList = lists.find(list => list.id === listId);
+
+    if (!deletedList) {
+      res.statusCode = 400;
+    
+      res.json({ error: `No list found by id: ${listId}` });
+      return;
+    }
+
+    lists = lists.filter(
+      list => list.id !== listId
+    );
+
+    fs.writeFile(LISTS_FILE, JSON.stringify(lists), (err, data) => {
+      if (err) {
+        res.statusCode = 500;
+        res.json({ error: err });
+        return;
+      }
+
+      res.statusCode = 200;
+      res.json(null);
+    });
+  });
+});
+
 app.listen(port, () => {
   console.log(`App listening on port ${port}`)
 });
