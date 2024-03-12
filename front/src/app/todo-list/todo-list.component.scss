@@ -13,11 +13,10 @@
 
   &__link {
     position: relative;
-    &:focus-within .task-list__showing-control-menu, .task-list__rename {
-      visibility: visible;
-    }
-    &:hover .task-list__showing-control-menu, .task-list__rename {
-      visibility: visible;
+    &:hover, &:focus-within {
+      .task-list__showing-control-menu, .task-list__rename {
+        visibility: visible;
+      }
     }
     &:link, &:visited, &:active {
       color: black;
