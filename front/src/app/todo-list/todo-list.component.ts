@@ -67,7 +67,7 @@ export class TodoListComponent implements OnInit, OnDestroy {
     return false;
   }
 
-  deleteTaskListById(id: string) {
+  deleteTaskListById(id: string): void {
     this.apiService.deleteTaskList(id)
       .subscribe(() => {
         this.router.navigate([]);
