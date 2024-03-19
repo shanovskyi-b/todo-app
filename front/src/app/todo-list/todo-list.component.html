@@ -50,6 +50,12 @@
             >
               Rename
             </button>
+            <button 
+              mat-menu-item 
+              (click)="deleteTaskListById(todoList.id)"
+            >
+              Delete
+            </button>
           </mat-menu>
         </div>
       </mat-radio-button>

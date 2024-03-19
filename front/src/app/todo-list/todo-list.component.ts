@@ -67,6 +67,15 @@ export class TodoListComponent implements OnInit, OnDestroy {
     return false;
   }
 
+  deleteTaskListById(id: string): void {
+    this.apiService.deleteTaskList(id)
+      .subscribe(() => {
+        this.router.navigate([]);
+        this.changeDetectorRef.markForCheck();
+        this.loadLists();
+        this.selectedTaskGroupIndex = undefined;
+      })
+  }
 
   // blur is triggered before the button, I had to make a slight delay in these two functions
   onRenameTaskGroupInputBlur(): void {
