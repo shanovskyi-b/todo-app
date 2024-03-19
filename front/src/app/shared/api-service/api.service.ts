@@ -26,7 +26,7 @@ export class ApiService {
   renameTaskGroup(id: string, title: string): Observable<NewTaskList> {
     return this.http.put<NewTaskList>(environment.apiUrl + `/list/${id}`, { list: { id: id, title: title }});
   }
-  deleteTaskList(id: string): Observable<null> {
-    return this.http.delete<null>(environment.apiUrl + `/list/${id}`);
+  deleteTaskList(id: string): Observable<void> {
+    return this.http.delete<void>(environment.apiUrl + `/list/${id}`);
   }
 }
