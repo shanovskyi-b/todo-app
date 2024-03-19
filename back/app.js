@@ -211,6 +211,60 @@ app.delete('/list/:id', (req, res) => {
   });
 });
 
+//////////// Individual task ///////////////
+// Create
+app.post('/list/:listId/task', (req, res) => {
+  const listId = req.params.listId;
+
+  if (!req.body?.title || typeof req.body.title !== 'string') {
+    res.statusCode = 500;
+    res.json({ error: '"Title" is invalid' });
+    return;
+  }
+
+  fs.readFile(LISTS_FILE, 'utf8', (err, data) => {
+    if (err) {
+      res.statusCode = 500;
+      res.json({ error: err });
+      return;
+    }
+
+    const lists = JSON.parse(data);
+    const editedList = lists.find(list => list.id === listId);
+
+    if (!editedList) {
+      res.statusCode = 400;
+    
+      res.json({ error: `No list found by id: ${listId}` });
+      return;
+    }
+
+    fs.readFile(TASKS_FILE, 'utf8', (err, data) => {
+      if (err) {
+        res.statusCode = 500;
+        res.json({ error: err });
+        return;
+      }
+      const tasks = JSON.parse(data);
+      const newTask = { id: uuidv4(), title: req.body.title };
+      let listTasks = tasks[listId] ?? [];
+      listTasks = [...listTasks, newTask];
+      
+      fs.writeFile(TASKS_FILE, JSON.stringify(listTasks), (err, data) => {
+        if (err) {
+          res.statusCode = 500;
+          res.json({ error: err });
+          return;
+        }
+  
+        res.statusCode = 200;
+        res.json({ task: newTask, allTasks: listTasks });
+      });
+    });
+
+  });
+});
+
 app.listen(port, () => {
   console.log(`App listening on port ${port}`)
 });
