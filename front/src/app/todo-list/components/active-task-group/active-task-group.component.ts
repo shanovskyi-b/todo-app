@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { TaskList } from '../../../shared/models/shared.models';
+import { ApiService } from '../../../shared/api-service/api.service';
 
 @Component({
   selector: 'app-active-task-group',
@@ -9,4 +10,12 @@ import { TaskList } from '../../../shared/models/shared.models';
 })
 export class ActiveTaskGroupComponent {
   @Input() taskList: TaskList | undefined;
+  @Output() newTaskEvent = new EventEmitter<string>();
+
+  constructor(public apiService: ApiService) {
+  } 
+
+  addNewItem(value: string) {
+    this.newTaskEvent.emit(value);
+  }
 }

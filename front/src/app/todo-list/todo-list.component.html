@@ -84,8 +84,7 @@
     </form>
   </mat-radio-group>
 </div>
-
-<app-active-task-group [taskList]="taskList"></app-active-task-group>
+<app-active-task-group [taskList]="taskList" (newTaskEvent)="addNewTask($event)"></app-active-task-group>
 
 <div [ngClass]="{'loading-screen': isResultLoading}">
   <img class="loading-spinner" src="/assets/svg/loading-screen.svg" alt="">

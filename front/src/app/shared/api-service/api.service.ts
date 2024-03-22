@@ -29,4 +29,9 @@ export class ApiService {
   deleteTaskList(id: string): Observable<void> {
     return this.http.delete<void>(environment.apiUrl + `/list/${id}`);
   }
+
+  // there is no typing yet because I don't know what exactly this query should return
+  addNewTasks(task: string, id: string) {
+    return this.http.post(environment.apiUrl + `/list/${id}/task`, { title: task })
+  }
 }
