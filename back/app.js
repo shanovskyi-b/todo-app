@@ -250,7 +250,7 @@ app.post('/list/:listId/task', (req, res) => {
       let listTasks = tasks[listId] ?? [];
       listTasks = [...listTasks, newTask];
       
-      fs.writeFile(TASKS_FILE, JSON.stringify(listTasks), (err, data) => {
+      fs.writeFile(TASKS_FILE, JSON.stringify({ ...tasks, [taskId]: listTasks }), (err, data) => {
         if (err) {
           res.statusCode = 500;
           res.json({ error: err });
