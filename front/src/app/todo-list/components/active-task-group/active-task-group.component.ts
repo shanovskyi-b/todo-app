@@ -39,7 +39,7 @@ export class ActiveTaskGroupComponent implements OnDestroy {
 
   showNewTaskInput(newTaskInput: HTMLInputElement): void {
     this.isNewTaskInputVisible = true;
-    this.changeDetectorRef.detectChanges()
+    this.changeDetectorRef.detectChanges();
     newTaskInput.focus();
   }
 
