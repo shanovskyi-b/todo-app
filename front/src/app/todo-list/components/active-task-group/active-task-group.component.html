@@ -1,4 +1,4 @@
-<div *ngIf="activeGroupId != undefined" class="task-list">
+<div *ngIf="activeGroupId !== undefined" class="task-list">
   <div *ngFor="let task of taskList?.tasks" class="task-list__task">
     {{task.title}}
   </div>

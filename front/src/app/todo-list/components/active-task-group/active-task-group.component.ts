@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy } from '@angular/core';
 import { TaskList } from '../../../shared/models/shared.models';
 import { ApiService } from '../../../shared/api-service/api.service';
 import { Subject, takeUntil } from 'rxjs';
@@ -9,7 +9,7 @@ import { Subject, takeUntil } from 'rxjs';
   styleUrl: './active-task-group.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ActiveTaskGroupComponent {
+export class ActiveTaskGroupComponent implements OnDestroy {
   @Input() taskList: TaskList | undefined;
   @Input() activeGroupId: string = '';
 
