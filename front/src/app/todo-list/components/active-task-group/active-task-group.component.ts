@@ -1,6 +1,7 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input } from '@angular/core';
 import { TaskList } from '../../../shared/models/shared.models';
 import { ApiService } from '../../../shared/api-service/api.service';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-active-task-group',
@@ -10,12 +11,52 @@ import { ApiService } from '../../../shared/api-service/api.service';
 })
 export class ActiveTaskGroupComponent {
   @Input() taskList: TaskList | undefined;
-  @Output() newTaskEvent = new EventEmitter<string>();
+  @Input() activeGroupId: string = '';
 
-  constructor(public apiService: ApiService) {
+  isNewTaskInputVisible: boolean = false;
+
+  private destroy$ = new Subject<void>();
+
+  constructor(public apiService: ApiService, private changeDetectorRef: ChangeDetectorRef) {
   } 
 
-  addNewItem(value: string) {
-    this.newTaskEvent.emit(value);
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  addNewTask(title: string): void {
+    if (title) {
+      this.apiService.addNewTasks(title, this.activeGroupId)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe(() => {
+          this.changeDetectorRef.markForCheck();
+          this.displayTaskList(this.activeGroupId);
+          this.isNewTaskInputVisible = false;
+      })
+    }
+  }
+
+  showNewTaskInput(newTaskInput: HTMLInputElement): void {
+    this.isNewTaskInputVisible = true;
+    this.changeDetectorRef.detectChanges()
+    newTaskInput.focus();
+  }
+
+  //blur triggers too early, needs a little delay
+  onNewTaskInputBlur(): void {
+    setTimeout(() => {
+      this.isNewTaskInputVisible = false;
+      this.changeDetectorRef.markForCheck();
+    }, 150)
+  }
+
+  private displayTaskList(id: string): void {
+    this.apiService.getTaskList(id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(taskList => {
+        this.taskList = taskList;
+        this.changeDetectorRef.markForCheck();
+      })
   }
 }

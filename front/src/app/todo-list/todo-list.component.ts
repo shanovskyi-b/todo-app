@@ -48,7 +48,6 @@ export class TodoListComponent implements OnInit, OnDestroy {
         this.radioBtnGroup.controls['activeTaskList'].setValue(listId);
       });
 
-    // Previously this query worked correctly, but after executing a new query it only returns an empty array
     listId$
       .pipe(
         takeUntil(this.destroy$),
@@ -64,13 +63,6 @@ export class TodoListComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
-  }
-
-  addNewTask(title: string): void {
-    this.apiService.addNewTasks(title, this.activeGroupId).subscribe(() => {
-      this.changeDetectorRef.markForCheck();
-      this.loadLists();
-    })
   }
 
   stopPropagation(event: Event): boolean {

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { TaskGroupsList, TaskList, NewTaskList } from '../models/shared.models';
+import { TaskGroupsList, TaskList, NewTaskList, TasksGroup } from '../models/shared.models';
 import { environment } from '../../../environments/environment';
 import { Observable } from 'rxjs';
 
@@ -30,8 +30,7 @@ export class ApiService {
     return this.http.delete<void>(environment.apiUrl + `/list/${id}`);
   }
 
-  // there is no typing yet because I don't know what exactly this query should return
-  addNewTasks(task: string, id: string) {
-    return this.http.post(environment.apiUrl + `/list/${id}/task`, { title: task })
+  addNewTasks(task: string, id: string): Observable<TasksGroup> {
+    return this.http.post<TasksGroup>(environment.apiUrl + `/list/${id}/task`, { title: task })
   }
 }
