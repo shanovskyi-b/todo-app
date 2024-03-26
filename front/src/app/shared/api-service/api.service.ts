@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { TaskGroupsList, TaskList, NewTaskList } from '../models/shared.models';
+import { TaskGroupsList, TaskList, NewTaskList, TasksGroup } from '../models/shared.models';
 import { environment } from '../../../environments/environment';
 import { Observable } from 'rxjs';
 
@@ -28,5 +28,8 @@ export class ApiService {
   }
   deleteTaskList(id: string): Observable<void> {
     return this.http.delete<void>(environment.apiUrl + `/list/${id}`);
+  }
+  addNewTasks(task: string, id: string): Observable<TasksGroup> {
+    return this.http.post<TasksGroup>(environment.apiUrl + `/list/${id}/task`, { title: task })
   }
 }
