@@ -28,6 +28,8 @@ export class TodoListComponent implements OnInit, OnDestroy {
 
   isResultLoading: boolean = false;
 
+  activeGroupId: string = '';
+
   private destroy$ = new Subject<void>();
 
   constructor(private apiService: ApiService, private changeDetectorRef: ChangeDetectorRef, private route: ActivatedRoute, private router: Router) {}
@@ -42,6 +44,7 @@ export class TodoListComponent implements OnInit, OnDestroy {
     listId$
       .pipe(takeUntil(this.destroy$))
       .subscribe(listId => {
+        this.activeGroupId = listId;
         this.radioBtnGroup.controls['activeTaskList'].setValue(listId);
       });
 

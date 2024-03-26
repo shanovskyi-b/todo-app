@@ -8,10 +8,21 @@
   height: 100%;
 }
 
-.task {
-  border-bottom: 1px solid rgb(228, 228, 228);
+.task-list {
   max-width: 400px;
   min-width: 300px;
   margin: 0 auto;
-  margin-top: 20px;
+  margin-top: 10px;
+
+  &__task {
+    border-bottom: 1px solid rgb(228, 228, 228);
+    margin-top: 20px;
+  }
+  &__new-task-input {
+    max-height: 70px;
+  }
+}
+
+.hide-element {
+  display: none;
 }

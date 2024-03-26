@@ -78,14 +78,14 @@
           <mat-icon>clear</mat-icon>
         </button>
       </mat-form-field>
-      <button mat-icon-button class="new-task-group__confirm" (click)="createNewTaskGroup(newTaskGroupFormField.value)">
+      <button type="button" mat-icon-button class="new-task-group__confirm" (click)="createNewTaskGroup(newTaskGroupFormField.value)">
         <mat-icon>done</mat-icon>
       </button>
     </form>
   </mat-radio-group>
 </div>
 
-<app-active-task-group [taskList]="taskList"></app-active-task-group>
+<app-active-task-group [taskList]="taskList" [activeGroupId]="activeGroupId"></app-active-task-group>
 
 <div [ngClass]="{'loading-screen': isResultLoading}">
   <img class="loading-spinner" src="/assets/svg/loading-screen.svg" alt="">
