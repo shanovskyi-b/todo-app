@@ -3,7 +3,7 @@ import { ApiService } from '../shared/api-service/api.service';
 import { FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TaskGroupsList, TaskList } from '../shared/models/shared.models';
-import { Observable, Subject, filter, map, switchMap, takeUntil } from 'rxjs';
+import { Observable, Subject, map, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-todo-list',
@@ -12,7 +12,7 @@ import { Observable, Subject, filter, map, switchMap, takeUntil } from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TodoListComponent implements OnInit, OnDestroy {
-  @ViewChild('newTaskGroupFormField') newTaskGroupFormField: ElementRef | undefined;
+  @ViewChild('newTaskListFormField') newTaskListFormField: ElementRef | undefined;
   
   allTaskLists: TaskGroupsList | undefined;
 
@@ -20,15 +20,19 @@ export class TodoListComponent implements OnInit, OnDestroy {
     activeTaskList: new FormControl()
   })
 
-  selectedTaskGroupIndex: number | undefined; 
+  selectedTaskListIndex: number | undefined; 
 
   taskList: TaskList | undefined;
 
-  isNewTaskGroupFormFieldVisible: boolean = false;
+  isNewTaskListFormFieldVisible: boolean = false;
 
   isResultLoading: boolean = false;
 
-  activeGroupId: string = '';
+  activeListId: string = '';
+
+  taskListInputValue: string = '';
+
+  listId: Observable<string> | undefined;
 
   private destroy$ = new Subject<void>();
 
@@ -44,20 +48,10 @@ export class TodoListComponent implements OnInit, OnDestroy {
     listId$
       .pipe(takeUntil(this.destroy$))
       .subscribe(listId => {
-        this.activeGroupId = listId;
+        this.activeListId = listId;
         this.radioBtnGroup.controls['activeTaskList'].setValue(listId);
       });
-
-    listId$
-      .pipe(
-        takeUntil(this.destroy$),
-        filter(listId => !!listId),
-        switchMap((listId) => this.loadTaskList(listId)),
-      )
-      .subscribe(taskList => {
-        this.taskList = taskList;
-        this.changeDetectorRef.markForCheck();
-      });
+    this.listId = listId$;
   }
 
   ngOnDestroy(): void {
@@ -76,56 +70,46 @@ export class TodoListComponent implements OnInit, OnDestroy {
         this.router.navigate([]);
         this.changeDetectorRef.markForCheck();
         this.loadLists();
-        this.selectedTaskGroupIndex = undefined;
+        this.selectedTaskListIndex = undefined;
       })
   }
 
-  // blur is triggered before the button, I had to make a slight delay in these two functions
-  onRenameTaskGroupInputBlur(): void {
+  // blur is triggered before the button, I had to make a slight delay in these function
+  onBlur(): void {
     setTimeout(() => {
-      this.selectedTaskGroupIndex = undefined;
+      this.selectedTaskListIndex = undefined;
+      this.isNewTaskListFormFieldVisible = false;
       this.changeDetectorRef.markForCheck();
     }, 150)
   }
 
-  hideNewTaskGroupFormField(): void {
-    setTimeout(() => {
-      this.isNewTaskGroupFormFieldVisible = false;
-      this.changeDetectorRef.markForCheck();
-    }, 150)
+  showRenameTaskListInput(taskListIndex: number, taskListTitle: string): void {
+    this.selectedTaskListIndex = taskListIndex;
+    this.taskListInputValue = taskListTitle;
   }
 
-  showRenameTaskGroupInput(taskListIndex: number, taskListTitle: string, renameTaskListInput: HTMLInputElement): void {
-    this.selectedTaskGroupIndex = taskListIndex;
-    renameTaskListInput.value = taskListTitle;
-    this.changeDetectorRef.detectChanges();
-    renameTaskListInput.focus();
-  }
-
-  renameTaskGroup(id: string, title: string): void {
-    this.apiService.renameTaskGroup(id, title)
+  renameTaskList(id: string, title: string): void {
+    this.apiService.renameTaskList(id, title)
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => {
         this.changeDetectorRef.markForCheck();
         this.loadLists();
-        this.selectedTaskGroupIndex = undefined;
+        this.selectedTaskListIndex = undefined;
       });
   }
 
-  showNewTaskGroupFormField(): void {
-    this.isNewTaskGroupFormFieldVisible = true;
-    this.changeDetectorRef.detectChanges()
-    this.newTaskGroupFormField?.nativeElement.focus();
+  showNewTaskListFormField(): void {
+    this.isNewTaskListFormFieldVisible = true;
   }
 
-  createNewTaskGroup(name: string): void {
+  createNewTaskList(name: string): void {
     if (!name) {
       return;
     }
 
     this.isResultLoading = true;
 
-    this.apiService.createTaskGroup(name)
+    this.apiService.createTaskList(name)
       .pipe(takeUntil(this.destroy$))
       .subscribe(data => {
         const list = data.list.id;
@@ -135,7 +119,7 @@ export class TodoListComponent implements OnInit, OnDestroy {
         this.isResultLoading = false;
       })
 
-    this.isNewTaskGroupFormFieldVisible = false;
+    this.isNewTaskListFormFieldVisible = false;
   }
 
   private loadLists(): void {
@@ -145,9 +129,5 @@ export class TodoListComponent implements OnInit, OnDestroy {
         this.allTaskLists = data;
         this.changeDetectorRef.markForCheck();
       });
-  }
-
-  private loadTaskList(id: string): Observable<TaskList> {
-    return this.apiService.getTaskList(id)
   }
 }

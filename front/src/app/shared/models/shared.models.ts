@@ -20,7 +20,7 @@ export interface NewTaskList {
   list: TaskGroup;
 }
 
-export interface TasksGroup {
+export interface СreateTaskResponse {
   allTasks: Task[];
   task: Task;
 }
