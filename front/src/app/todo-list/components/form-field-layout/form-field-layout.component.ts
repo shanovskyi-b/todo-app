@@ -7,9 +7,10 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DoCheck, Element
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FormFieldLayoutComponent implements DoCheck {
+  @Input() taskListInputValue: string = '';
   @Output() taskListInput = new EventEmitter<string>();
   @Output() taskListInputBlur = new EventEmitter();
-  @Input() taskListInputValue: string = '';
+
   @ViewChild('inputLayout') inputLayout: ElementRef | undefined;
 
   constructor(private changeDetectorRef: ChangeDetectorRef) {
@@ -23,7 +24,10 @@ export class FormFieldLayoutComponent implements DoCheck {
   handleConfirmation (value: string): void {
     this.taskListInput.emit(value)
   }
+  
   onBlur(): void {
-    this.taskListInputBlur.emit();
+    setTimeout(() => {
+      this.taskListInputBlur.emit();
+    }, 150)
   }
 }

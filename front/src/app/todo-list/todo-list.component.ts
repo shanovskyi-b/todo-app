@@ -74,13 +74,10 @@ export class TodoListComponent implements OnInit, OnDestroy {
       })
   }
 
-  // blur is triggered before the button, I had to make a slight delay in these function
   onBlur(): void {
-    setTimeout(() => {
-      this.selectedTaskListIndex = undefined;
-      this.isNewTaskListFormFieldVisible = false;
-      this.changeDetectorRef.markForCheck();
-    }, 150)
+    this.selectedTaskListIndex = undefined;
+    this.isNewTaskListFormFieldVisible = false;
+    this.changeDetectorRef.markForCheck();
   }
 
   showRenameTaskListInput(taskListIndex: number, taskListTitle: string): void {

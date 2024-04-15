@@ -64,12 +64,9 @@ export class ActiveTaskListComponent implements OnDestroy, OnInit {
     this.isNewTaskInputVisible = true;
   }
 
-  //blur triggers too early, needs a little delay
   onBlur(): void {
-    setTimeout(() => {
-      this.isNewTaskInputVisible = false;
-      this.changeDetectorRef.markForCheck();
-    }, 150)
+    this.isNewTaskInputVisible = false;
+    this.changeDetectorRef.markForCheck();
   }
 
   private displayTaskList(id: string): void {

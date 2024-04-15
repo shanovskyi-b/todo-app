@@ -101,17 +101,15 @@
   ::ng-deep {
     .input-layout {
       &__wrapper {
-        max-width: 210px;
+        max-width: 85%;
       }
       &__confirm {
         height: 30px;
         width: 30px;
         padding: 4px;
-        ::ng-deep {
-          .mat-mdc-button-touch-target {
-            height: 30px;
-            width: 30px;
-          }
+        .mat-mdc-button-touch-target {
+          height: 30px;
+          width: 30px;
         }
       }
     }
