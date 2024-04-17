@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ActiveTaskGroupComponent } from './active-task-group.component';
+import { FormFieldLayoutComponent } from './form-field-layout.component';
 
-describe('ActiveTaskGroupComponent', () => {
-  let component: ActiveTaskGroupComponent;
-  let fixture: ComponentFixture<ActiveTaskGroupComponent>;
+describe('TaskListFormFieldComponent', () => {
+  let component: FormFieldLayoutComponent;
+  let fixture: ComponentFixture<FormFieldLayoutComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ActiveTaskGroupComponent]
+      declarations: [FormFieldLayoutComponent]
     })
     .compileComponents();
     
-    fixture = TestBed.createComponent(ActiveTaskGroupComponent);
+    fixture = TestBed.createComponent(FormFieldLayoutComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

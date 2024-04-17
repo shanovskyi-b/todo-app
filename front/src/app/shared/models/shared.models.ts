@@ -7,15 +7,20 @@ export interface TaskGroupsList {
   lists: TaskGroup[];
 }
 
-export interface Tasks {
+export interface Task {
   id: string;
   title: string;
 }
 
 export interface TaskList {
-  tasks: Tasks[];
+  tasks: Task[];
 }
 
 export interface NewTaskList {
   list: TaskGroup;
+}
+
+export interface СreateTaskResponse {
+  allTasks: Task[];
+  task: Task;
 }

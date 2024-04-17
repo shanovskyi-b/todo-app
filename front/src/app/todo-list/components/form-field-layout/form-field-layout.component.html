@@ -1,0 +1,15 @@
+<form class="input-layout">
+  <mat-form-field class="input-layout__wrapper" >
+    <input 
+      #inputLayout 
+      [value]="taskListInputValue"
+      matInput type="text"
+      class="input-layout__input"
+      (keydown.enter)="handleConfirmation(inputLayout.value)" 
+      (blur)="onBlur()"
+    >
+  </mat-form-field>
+  <button class="input-layout__confirm" mat-icon-button disableRipple="true" (click)="handleConfirmation(inputLayout.value)">
+    <mat-icon>done</mat-icon>
+  </button>
+</form>

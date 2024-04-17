@@ -4,13 +4,15 @@ import { TodoListComponent } from './todo-list.component';
 import { SharedModule } from '../shared/shared.module';
 import { RouterModule } from '@angular/router';
 import { TodoListRoutingModule } from './todo-list-routing.module';
-import { ActiveTaskGroupComponent } from './components/active-task-group/active-task-group.component';
+import { ActiveTaskListComponent } from './components/active-task-list/active-task-list.component';
+import { FormFieldLayoutComponent } from './components/form-field-layout/form-field-layout.component';
 
 
 @NgModule({
   declarations: [
     TodoListComponent,
-    ActiveTaskGroupComponent
+    ActiveTaskListComponent,
+    FormFieldLayoutComponent,
   ],
   imports: [
     CommonModule,

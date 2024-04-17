@@ -1,0 +1,29 @@
+:host {
+  max-width: 800px;
+  width: 800px;
+  min-width: 300px;
+  font-size: 18px;
+  height: 100%;
+}
+
+.task-list {
+  max-width: 500px;
+  width: 100%;
+  margin-top: 10px;
+  margin-left: 70px;
+
+  &__task {
+    border-bottom: 1px solid rgb(228, 228, 228);
+    margin-top: 20px;
+  }
+}
+
+.new-task {
+  ::ng-deep {
+    .input-layout {
+      &__wrapper {
+        max-width: 300px;
+      }
+    }
+  }
+}

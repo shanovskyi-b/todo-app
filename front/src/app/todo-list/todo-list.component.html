@@ -8,23 +8,20 @@
     >
       <mat-radio-button [value]="todoList.id" class="task-list__list">
         <div class="task-list__task-group">
-          <span *ngIf="selectedTaskGroupIndex !== taskListIndex">
+          <span *ngIf="selectedTaskListIndex !== taskListIndex">
             {{todoList.title}}
           </span>
-          <input
-            [ngClass]="{'hide-element': selectedTaskGroupIndex !== taskListIndex}"
-            #renameTaskGroupFormField
-            matInput
-            name="input{{taskListIndex}}"  
-            type="text"
-            (keydown.enter)="renameTaskGroup(todoList.id, renameTaskGroupFormField.value)"
-            (blur)="onRenameTaskGroupInputBlur()"
-            (click)="stopPropagation($event)"
-          >
+          <app-form-field-layout 
+            *ngIf="selectedTaskListIndex === taskListIndex"
+            [taskListInputValue]="taskListInputValue"
+            class="rename-task-list"
+            (taskListInput)="renameTaskList(todoList.id, $event)"
+            (taskListInputBlur)="onBlur()"
+          ></app-form-field-layout>
         </div>
         <div>
           <button 
-            *ngIf="selectedTaskGroupIndex !== taskListIndex" 
+            *ngIf="selectedTaskListIndex !== taskListIndex" 
             [matMenuTriggerRestoreFocus]="false" 
             [matMenuTriggerFor]="menu" 
             mat-icon-button
@@ -34,19 +31,10 @@
           >
             <mat-icon>more_horiz</mat-icon>
           </button>
-          <button 
-            *ngIf="selectedTaskGroupIndex === taskListIndex"
-            mat-icon-button 
-            class="task-list__rename"
-            disableRipple="true"
-            (click)="renameTaskGroup(todoList.id, renameTaskGroupFormField.value); stopPropagation($event)"
-          >
-            <mat-icon>done</mat-icon>
-          </button>
           <mat-menu #menu="matMenu">
             <button
               mat-menu-item
-              (click)="showRenameTaskGroupInput(taskListIndex, todoList.title, renameTaskGroupFormField)"
+              (click)="showRenameTaskListInput(taskListIndex, todoList.title)"
             >
               Rename
             </button>
@@ -60,32 +48,18 @@
         </div>
       </mat-radio-button>
     </a>
-    <button *ngIf="!isNewTaskGroupFormFieldVisible" mat-icon-button class="task-list__add" (click)="showNewTaskGroupFormField()">
+    <button *ngIf="!isNewTaskListFormFieldVisible" mat-icon-button class="task-list__add" (click)="showNewTaskListFormField()">
       <mat-icon>add</mat-icon>
     </button>
-    <form *ngIf="isNewTaskGroupFormFieldVisible" class="new-task-group">
-      <mat-form-field class="new-task-group__wrapper">
-        <input
-          #newTaskGroupFormField
-          type="text" 
-          matInput 
-          name="newTaskGroupInput" 
-          class="new-task-group__input"
-          (blur)="hideNewTaskGroupFormField()"
-          (keydown.enter)="createNewTaskGroup(newTaskGroupFormField.value)"
-        >
-        <button *ngIf="isNewTaskGroupFormFieldVisible" mat-icon-button class="new-task-group__cancel" (click)="hideNewTaskGroupFormField()">
-          <mat-icon>clear</mat-icon>
-        </button>
-      </mat-form-field>
-      <button mat-icon-button class="new-task-group__confirm" (click)="createNewTaskGroup(newTaskGroupFormField.value)">
-        <mat-icon>done</mat-icon>
-      </button>
-    </form>
+    <app-form-field-layout 
+      *ngIf="isNewTaskListFormFieldVisible" 
+      (taskListInput)="createNewTaskList($event)" 
+      (taskListInputBlur)="onBlur()"
+    ></app-form-field-layout>
   </mat-radio-group>
 </div>
 
-<app-active-task-group [taskList]="taskList"></app-active-task-group>
+<app-active-task-list [listId$]="listId"></app-active-task-list>
 
 <div [ngClass]="{'loading-screen': isResultLoading}">
   <img class="loading-spinner" src="/assets/svg/loading-screen.svg" alt="">
