@@ -1,9 +1,10 @@
 :host {
-  max-width: 800px;
   width: 800px;
   min-width: 300px;
   font-size: 18px;
   height: 100%;
+  overflow-y: auto;
+  flex-grow: 4;
 }
 
 .task-list {
@@ -20,10 +21,15 @@
 
 .new-task {
   ::ng-deep {
-    .input-layout {
-      &__wrapper {
-        max-width: 300px;
-      }
+    .mat-mdc-text-field-wrapper {
+      height: 50px !important;
+    }
+    .mat-mdc-form-field-flex {
+      margin-top: -3px !important;
     }
   }
+}
+
+.new-task-wrapper {
+  margin-top: 10px;
 }
