@@ -5,7 +5,7 @@
 
 .task-list {
   height: 100%;
-  max-width: 260px;
+  overflow-y: auto;
   padding-left: 20px;
   padding-top: 10px;
   padding-right: 15px;
@@ -42,7 +42,7 @@
   &__list {
     width: 260px;
     height: 30px;
-    border-radius: 25px;
+    border-radius: 5px;
     margin-top: 10px;
     text-align: center;
     display: block;
@@ -58,7 +58,7 @@
   }
 
   .mat-mdc-radio-checked {
-    background-color: rgb(235, 191, 69);
+    background-color: #91a0f3;
   }
 
   ::ng-deep {
@@ -100,9 +100,6 @@
 .rename-task-list {
   ::ng-deep {
     .input-layout {
-      &__wrapper {
-        max-width: 85%;
-      }
       &__confirm {
         height: 30px;
         width: 30px;
@@ -113,12 +110,32 @@
         }
       }
     }
-    .mat-mdc-text-field-wrapper  {
-      height: 26px;
+
+    .mat-mdc-text-field-wrapper {
+      margin-top: 2px;
+      height: 26px !important;
       background-color: rgb(231, 231, 231);
     }
-    .mat-mdc-form-field-subscript-wrapper, .mat-mdc-form-field-focus-overlay, .mdc-line-ripple {
+    .mat-mdc-form-field-infix {
+      padding-top: 2px;
+    }
+    .mat-mdc-form-field-focus-overlay, .mdc-line-ripple {
       display: none;
     }
   }
+}
+
+.new-task-list {
+  ::ng-deep {
+    .mat-mdc-text-field-wrapper {
+      height: 50px !important;
+    }
+    .mat-mdc-form-field-infix {
+      padding-top: 12px;
+    }
+  }
+}
+
+.new-task-list-wrapper {
+  margin-top: 15px;
 }

@@ -18,7 +18,7 @@ export class FormFieldLayoutComponent implements DoCheck {
 
   ngDoCheck() {
     this.changeDetectorRef.detectChanges();
-    this.inputLayout?.nativeElement.focus()
+    this.inputLayout?.nativeElement.focus();
   }
 
   handleConfirmation (value: string): void {

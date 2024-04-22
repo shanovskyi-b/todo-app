@@ -2,16 +2,18 @@
   <div *ngFor="let task of taskList?.tasks" class="task-list__task">
     {{task.title}}
   </div>
-  <div *ngIf="!isNewTaskInputVisible">
-    <button mat-button (click)="showNewTaskInput()">
-      <mat-icon>add</mat-icon>
-      New Task
-    </button>
+  <div class="new-task-wrapper">
+    <div *ngIf="!isNewTaskInputVisible">
+      <button mat-button (click)="showNewTaskInput()">
+        <mat-icon>add</mat-icon>
+        New Task
+      </button>
+    </div>
+    <app-form-field-layout 
+      *ngIf="isNewTaskInputVisible"
+      class="new-task"
+      (taskListInput)="addNewTask($event)"
+      (taskListInputBlur)="onBlur()"
+    ></app-form-field-layout>
   </div>
-  <app-form-field-layout 
-    *ngIf="isNewTaskInputVisible"
-    class="new-task"
-    (taskListInput)="addNewTask($event)"
-    (taskListInputBlur)="onBlur()"
-  ></app-form-field-layout>
 </div>

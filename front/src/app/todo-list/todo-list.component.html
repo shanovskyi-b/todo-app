@@ -51,11 +51,14 @@
     <button *ngIf="!isNewTaskListFormFieldVisible" mat-icon-button class="task-list__add" (click)="showNewTaskListFormField()">
       <mat-icon>add</mat-icon>
     </button>
-    <app-form-field-layout 
-      *ngIf="isNewTaskListFormFieldVisible" 
+    <div class="new-task-list-wrapper">
+      <app-form-field-layout
+      *ngIf="isNewTaskListFormFieldVisible"
+      class="new-task-list" 
       (taskListInput)="createNewTaskList($event)" 
       (taskListInputBlur)="onBlur()"
     ></app-form-field-layout>
+    </div>
   </mat-radio-group>
 </div>
 
