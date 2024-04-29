@@ -1,19 +1,55 @@
-<div *ngIf="activeListId !== undefined" class="task-list">
-  <div *ngFor="let task of taskList?.tasks" class="task-list__task">
-    {{task.title}}
-  </div>
-  <div class="new-task-wrapper">
-    <div *ngIf="!isNewTaskInputVisible">
-      <button mat-button (click)="showNewTaskInput()">
-        <mat-icon>add</mat-icon>
-        New Task
+<div *ngIf="activeListId" class="task-list">
+  <div *ngIf="!isRenameTaskListVisible">
+    <div class="task-list__title">
+      <p>{{activeTaskList?.[0]?.title}}</p>
+      <button 
+        [matMenuTriggerRestoreFocus]="false" 
+        [matMenuTriggerFor]="menu" 
+        mat-icon-button
+        disableRipple="true"
+      >
+        <mat-icon>more_horiz</mat-icon>
       </button>
     </div>
-    <app-form-field-layout 
-      *ngIf="isNewTaskInputVisible"
-      class="new-task"
-      (taskListInput)="addNewTask($event)"
-      (taskListInputBlur)="onBlur()"
-    ></app-form-field-layout>
+    <mat-menu #menu="matMenu">
+      <button
+        mat-menu-item
+        (click)="isRenameTaskListVisible = true"
+      >
+        Rename
+      </button>
+      <button 
+        mat-menu-item 
+        (click)="deleteTaskListById(activeListId)"
+      >
+        Delete
+      </button>
+    </mat-menu>
+  </div>
+  <app-form-field-layout 
+    *ngIf="isRenameTaskListVisible" 
+    [taskListInputValue]="activeTaskList?.[0]?.title" 
+    (taskListInput)="renameTaskList(activeListId, $event)"
+    (taskListInputBlur)="onBlur()"
+  ></app-form-field-layout>
+  <div>
+    <div *ngFor="let task of taskList?.tasks" class="task-list__task">
+      {{task.title}}
+    </div>
+    <div class="new-task-wrapper">
+      <div *ngIf="!isNewTaskInputVisible">
+        <button mat-button (click)="showNewTaskInput()">
+          <mat-icon>add</mat-icon>
+          New Task
+        </button>
+      </div>
+      <app-form-field-layout 
+        *ngIf="isNewTaskInputVisible"
+        [taskListInputValue]="''"
+        class="new-task"
+        (taskListInput)="addNewTask($event)"
+        (taskListInputBlur)="onBlur()"
+      ></app-form-field-layout>
+    </div>
   </div>
 </div>
