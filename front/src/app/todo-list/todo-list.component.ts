@@ -18,9 +18,9 @@ export class TodoListComponent implements OnInit, OnDestroy {
     activeTaskList: new FormControl()
   })
 
-  allTaskLists = this.taskListManager.allTaskLists$;
+  allTaskLists$ = this.taskListManager.allTaskLists$;
 
-  selectedTaskListIndex = this.taskListManager.selectedTaskListIndex$;
+  selectedTaskListIndex$ = this.taskListManager.selectedTaskListIndex$;
 
   isNewTaskListFormFieldVisible: boolean = false;
 
