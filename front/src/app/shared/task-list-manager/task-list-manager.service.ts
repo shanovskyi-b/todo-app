@@ -9,15 +9,23 @@ import { ActivatedRoute, Router } from '@angular/router';
 })
 export class TaskListManagerService {
 
-  allTaskLists = new BehaviorSubject<TaskGroupsList | undefined>(undefined)
-
-  selectedTaskListIndex = new BehaviorSubject<number | undefined>(undefined) 
-
   listId$: Observable<string> = this.route.queryParams.pipe(
     map((params): string => params['list']),
   );
 
+  private allTaskListsSubject$ = new BehaviorSubject<TaskGroupsList | undefined>(undefined)
+
+  private selectedTaskListIndexSubject$ = new BehaviorSubject<number | undefined>(undefined)
+
   private destroy$ = new Subject<void>();
+
+  get allTaskLists$(): Observable<TaskGroupsList | undefined> {
+    return this.allTaskListsSubject$.asObservable();
+  }
+
+  get selectedTaskListIndex$(): Observable<number | undefined> {
+    return this.selectedTaskListIndexSubject$.asObservable();
+  }
 
   constructor(private apiService: ApiService, private router: Router, private route: ActivatedRoute) { }
 
@@ -25,16 +33,15 @@ export class TaskListManagerService {
     this.apiService.getLists()
       .pipe(takeUntil(this.destroy$))
       .subscribe(data => {
-        this.allTaskLists.next(data)
+        this.allTaskListsSubject$.next(data)
       });
   }
 
   deleteTaskListById(id: string): void { 
-    this.apiService.deleteTaskList(id)//
+    this.apiService.deleteTaskList(id)
       .subscribe(() => {
         this.router.navigate([]);
         this.loadLists();
-        this.selectedTaskListIndex.next(undefined)
       })
   }
 
@@ -43,7 +50,11 @@ export class TaskListManagerService {
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => {
         this.loadLists();
-        this.selectedTaskListIndex.next(undefined)
+        this.selectedTaskListIndexSubject$.next(undefined)
       });
+  }
+
+  changeActiveIndex(index: number | undefined) {
+    this.selectedTaskListIndexSubject$.next(index);
   }
 }

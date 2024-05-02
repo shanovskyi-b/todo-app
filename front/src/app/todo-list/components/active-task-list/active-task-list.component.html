@@ -1,7 +1,7 @@
-<div *ngIf="activeListId" class="task-list">
+<div *ngIf="(activeListId$ | async)" class="task-list">
   <div *ngIf="!isRenameTaskListVisible">
     <div class="task-list__title">
-      <p>{{activeTaskList?.[0]?.title}}</p>
+      <p>{{(activeTaskGroup$ | async)?.title}}</p>
       <button 
         [matMenuTriggerRestoreFocus]="false" 
         [matMenuTriggerFor]="menu" 
@@ -20,7 +20,7 @@
       </button>
       <button 
         mat-menu-item 
-        (click)="deleteTaskListById(activeListId)"
+        (click)="deleteTaskListById()"
       >
         Delete
       </button>
@@ -28,12 +28,12 @@
   </div>
   <app-form-field-layout 
     *ngIf="isRenameTaskListVisible" 
-    [taskListInputValue]="activeTaskList?.[0]?.title" 
-    (taskListInput)="renameTaskList(activeListId, $event)"
+    [taskListInputValue]="(activeTaskGroup$ | async)?.title" 
+    (taskListInput)="renameTaskList($event)"
     (taskListInputBlur)="onBlur()"
   ></app-form-field-layout>
   <div>
-    <div *ngFor="let task of taskList?.tasks" class="task-list__task">
+    <div *ngFor="let task of (taskList$ | async)?.tasks" class="task-list__task">
       {{task.title}}
     </div>
     <div class="new-task-wrapper">

@@ -1,27 +1,27 @@
 <div [formGroup]="radioBtnGroup" class="task-list">
   <mat-radio-group formControlName="activeTaskList" class="task-list__group">
     <a
-      *ngFor="let todoList of (taskListManager.allTaskLists | async)?.lists; let taskListIndex = index" 
+      *ngFor="let todoList of (allTaskLists | async)?.lists; let taskListIndex = index" 
       [routerLink]="['/todo']"
       [queryParams]="{list: todoList.id}"
       class="task-list__link"
     >
       <mat-radio-button [value]="todoList.id" class="task-list__list">
         <div class="task-list__task-group">
-          <span *ngIf="(taskListManager.selectedTaskListIndex | async) !== taskListIndex">
+          <span *ngIf="(selectedTaskListIndex | async) !== taskListIndex">
             {{todoList.title}}
           </span>
           <app-form-field-layout 
-            *ngIf="(taskListManager.selectedTaskListIndex | async) === taskListIndex"
+            *ngIf="(selectedTaskListIndex | async) === taskListIndex"
             [taskListInputValue]="taskListInputValue"
             class="rename-task-list"
-            (taskListInput)="taskListManager.renameTaskList(todoList.id, $event)"
+            (taskListInput)="onRename(todoList.id, $event)"
             (taskListInputBlur)="onBlur()"
           ></app-form-field-layout>
         </div>
         <div>
           <button 
-            *ngIf="(taskListManager.selectedTaskListIndex | async) !== taskListIndex" 
+            *ngIf="(selectedTaskListIndex | async) !== taskListIndex" 
             [matMenuTriggerRestoreFocus]="false" 
             [matMenuTriggerFor]="menu" 
             mat-icon-button
@@ -40,7 +40,7 @@
             </button>
             <button 
               mat-menu-item 
-              (click)="taskListManager.deleteTaskListById(todoList.id)"
+              (click)="onDelete(todoList.id)"
             >
               Delete
             </button>

@@ -29,7 +29,7 @@ export class ApiService {
   deleteTaskList(id: string): Observable<void> {
     return this.http.delete<void>(environment.apiUrl + `/list/${id}`);
   }
-  addNewTasks(task: string, id: string | undefined): Observable<СreateTaskResponse> {
+  addNewTasks(task: string, id: string): Observable<СreateTaskResponse> {
     return this.http.post<СreateTaskResponse>(environment.apiUrl + `/list/${id}/task`, { title: task })
   }
 }

@@ -18,6 +18,10 @@ export class TodoListComponent implements OnInit, OnDestroy {
     activeTaskList: new FormControl()
   })
 
+  allTaskLists = this.taskListManager.allTaskLists$;
+
+  selectedTaskListIndex = this.taskListManager.selectedTaskListIndex$;
+
   isNewTaskListFormFieldVisible: boolean = false;
 
   isResultLoading: boolean = false;
@@ -28,7 +32,7 @@ export class TodoListComponent implements OnInit, OnDestroy {
 
   private destroy$ = new Subject<void>();
 
-  constructor(public taskListManager: TaskListManagerService, private apiService: ApiService, private changeDetectorRef: ChangeDetectorRef, private router: Router) {}
+  constructor(private taskListManager: TaskListManagerService, private apiService: ApiService, private changeDetectorRef: ChangeDetectorRef, private router: Router) {}
 
   ngOnInit(): void {
     this.taskListManager.loadLists();
@@ -51,14 +55,22 @@ export class TodoListComponent implements OnInit, OnDestroy {
     return false;
   }
 
+  onRename(id: string, title: string) {
+    this.taskListManager.renameTaskList(id, title);
+  }
+
+  onDelete(id: string) {
+    this.taskListManager.deleteTaskListById(id);
+  }
+
   onBlur(): void {
-    this.taskListManager.selectedTaskListIndex.next(undefined);
+    this.taskListManager.changeActiveIndex(undefined);
     this.isNewTaskListFormFieldVisible = false;
     this.changeDetectorRef.markForCheck();
   }
 
   showRenameTaskListInput(taskListIndex: number, taskListTitle: string): void {
-    this.taskListManager.selectedTaskListIndex.next(taskListIndex);
+    this.taskListManager.changeActiveIndex(taskListIndex);
     this.taskListInputValue = taskListTitle;
   }
 
