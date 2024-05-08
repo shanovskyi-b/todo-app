@@ -20,7 +20,7 @@ export class TodoListComponent implements OnInit, OnDestroy {
 
   allTaskLists$ = this.taskListManager.allTaskLists$;
 
-  selectedTaskListIndex$ = this.taskListManager.selectedTaskListIndex$;
+  activeListControlIndex$ = this.taskListManager.activeListControlIndex$;
 
   isNewTaskListFormFieldVisible: boolean = false;
 
@@ -64,7 +64,7 @@ export class TodoListComponent implements OnInit, OnDestroy {
   }
 
   onBlur(): void {
-    this.taskListManager.changeActiveIndex(undefined);
+    this.taskListManager.changeActiveIndex(0);
     this.isNewTaskListFormFieldVisible = false;
     this.changeDetectorRef.markForCheck();
   }

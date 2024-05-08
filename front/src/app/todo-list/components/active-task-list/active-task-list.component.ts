@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { TaskGroup, TaskGroupsList, TaskList } from '../../../shared/models/shared.models';
-import { BehaviorSubject, Observable, Subject, combineLatest, filter, first, map, takeUntil } from 'rxjs';
+import { Observable, ReplaySubject, Subject, combineLatest, filter, first, map, takeUntil } from 'rxjs';
 import { ApiService } from '../../../shared/api-service/api.service';
 import { TaskListManagerService } from '../../../shared/task-list-manager/task-list-manager.service';
 
@@ -13,15 +13,13 @@ import { TaskListManagerService } from '../../../shared/task-list-manager/task-l
 export class ActiveTaskListComponent implements OnDestroy, OnInit {
   isRenameTaskListVisible: boolean = false
  
-  taskList$ = new BehaviorSubject<TaskList | undefined>(undefined);
+  taskList$ = new ReplaySubject<TaskList>(1);
 
   isNewTaskInputVisible: boolean = false;
 
   activeListId$: Observable<string> = this.taskListManager.listId$;
 
-  allTaskLists$: Observable<TaskGroupsList> = this.taskListManager.allTaskLists$.pipe(
-    filter<TaskGroupsList | undefined, TaskGroupsList>((data): data is TaskGroupsList => !!data),
-  );
+  allTaskLists$: Observable<TaskGroupsList> = this.taskListManager.allTaskLists$
 
   activeTaskGroup$: Observable<TaskGroup> = combineLatest(
     [this.allTaskLists$, this.taskListManager.listId$]
@@ -37,17 +35,6 @@ export class ActiveTaskListComponent implements OnDestroy, OnInit {
   } 
 
   ngOnInit(): void {
-    this.taskListManager.allTaskLists$
-      .pipe(
-        filter<TaskGroupsList | undefined, TaskGroupsList>((data): data is TaskGroupsList => !!data),
-        takeUntil(this.destroy$)
-      )
-      .subscribe(data => {
-        if (data.lists) {
-          this.changeDetectorRef.markForCheck();
-        }
-      })
-
     this.taskListManager.listId$.pipe(
       filter(listId => !!listId),
       takeUntil(this.destroy$),

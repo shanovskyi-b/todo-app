@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { TaskGroupsList } from '../models/shared.models';
 import { ApiService } from '../api-service/api.service';
-import { BehaviorSubject, Observable, Subject, map, takeUntil } from 'rxjs';
+import { Observable, ReplaySubject, Subject, map, takeUntil, withLatestFrom } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Injectable({
@@ -13,18 +13,18 @@ export class TaskListManagerService {
     map((params): string => params['list']),
   );
 
-  private allTaskListsSubject$ = new BehaviorSubject<TaskGroupsList | undefined>(undefined)
+  private allTaskListsSubject$ = new ReplaySubject<TaskGroupsList>(1)
 
-  private selectedTaskListIndexSubject$ = new BehaviorSubject<number | undefined>(undefined)
+  private activeListControlIndexSubject$ = new ReplaySubject<number>(1)
 
   private destroy$ = new Subject<void>();
 
-  get allTaskLists$(): Observable<TaskGroupsList | undefined> {
+  get allTaskLists$(): Observable<TaskGroupsList> {
     return this.allTaskListsSubject$.asObservable();
   }
 
-  get selectedTaskListIndex$(): Observable<number | undefined> {
-    return this.selectedTaskListIndexSubject$.asObservable();
+  get activeListControlIndex$(): Observable<number> {
+    return this.activeListControlIndexSubject$.asObservable();
   }
 
   constructor(private apiService: ApiService, private router: Router, private route: ActivatedRoute) { }
@@ -33,14 +33,21 @@ export class TaskListManagerService {
     this.apiService.getLists()
       .pipe(takeUntil(this.destroy$))
       .subscribe(data => {
-        this.allTaskListsSubject$.next(data)
+        this.allTaskListsSubject$.next(data);
+        this.activeListControlIndexSubject$.next(0);
       });
   }
 
   deleteTaskListById(id: string): void { 
     this.apiService.deleteTaskList(id)
-      .subscribe(() => {
-        this.router.navigate([]);
+      .pipe(
+        withLatestFrom(this.listId$),
+        takeUntil(this.destroy$)
+      )
+      .subscribe(([_data, listId]) => {
+        if (listId === id) {
+          this.router.navigate([]);
+        }
         this.loadLists();
       })
   }
@@ -50,11 +57,10 @@ export class TaskListManagerService {
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => {
         this.loadLists();
-        this.selectedTaskListIndexSubject$.next(undefined)
       });
   }
 
-  changeActiveIndex(index: number | undefined) {
-    this.selectedTaskListIndexSubject$.next(index);
+  changeActiveIndex(index: number) {
+    this.activeListControlIndexSubject$.next(index);
   }
 }

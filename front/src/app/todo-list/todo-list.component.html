@@ -1,18 +1,18 @@
 <div [formGroup]="radioBtnGroup" class="task-list">
   <mat-radio-group formControlName="activeTaskList" class="task-list__group">
     <a
-      *ngFor="let todoList of (allTaskLists$ | async)?.lists; let taskListIndex = index" 
+      *ngFor="let todoList of (allTaskLists$ | async)?.lists; let taskListIndex = 'index + 1'" 
       [routerLink]="['/todo']"
       [queryParams]="{list: todoList.id}"
       class="task-list__link"
     >
       <mat-radio-button [value]="todoList.id" class="task-list__list">
         <div class="task-list__task-group">
-          <span *ngIf="(selectedTaskListIndex$ | async) !== taskListIndex">
+          <span *ngIf="(activeListControlIndex$ | async) !== taskListIndex">
             {{todoList.title}}
           </span>
           <app-form-field-layout 
-            *ngIf="(selectedTaskListIndex$ | async) === taskListIndex"
+            *ngIf="(activeListControlIndex$ | async) === taskListIndex"
             [taskListInputValue]="taskListInputValue"
             class="rename-task-list"
             (taskListInput)="onRename(todoList.id, $event)"
@@ -21,7 +21,7 @@
         </div>
         <div>
           <button 
-            *ngIf="(selectedTaskListIndex$ | async) !== taskListIndex" 
+            *ngIf="(activeListControlIndex$ | async) !== taskListIndex" 
             [matMenuTriggerRestoreFocus]="false" 
             [matMenuTriggerFor]="menu" 
             mat-icon-button
