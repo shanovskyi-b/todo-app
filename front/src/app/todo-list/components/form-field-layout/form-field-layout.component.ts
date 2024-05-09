@@ -7,7 +7,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DoCheck, Element
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FormFieldLayoutComponent implements DoCheck {
-  @Input() taskListInputValue: string = '';
+  @Input() taskListInputValue: string | undefined;
   @Output() taskListInput = new EventEmitter<string>();
   @Output() taskListInputBlur = new EventEmitter();
 

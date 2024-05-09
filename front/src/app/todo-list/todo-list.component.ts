@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { ApiService } from '../shared/api-service/api.service';
 import { FormControl, FormGroup } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { TaskGroupsList, TaskList } from '../shared/models/shared.models';
-import { Observable, Subject, map, takeUntil } from 'rxjs';
+import { Router } from '@angular/router';
+import { Subject, takeUntil } from 'rxjs';
+import { TaskListManagerService } from '../shared/task-list-manager/task-list-manager.service';
 
 @Component({
   selector: 'app-todo-list',
@@ -13,16 +13,14 @@ import { Observable, Subject, map, takeUntil } from 'rxjs';
 })
 export class TodoListComponent implements OnInit, OnDestroy {
   @ViewChild('newTaskListFormField') newTaskListFormField: ElementRef | undefined;
-  
-  allTaskLists: TaskGroupsList | undefined;
 
   radioBtnGroup: FormGroup = new FormGroup ({
     activeTaskList: new FormControl()
   })
 
-  selectedTaskListIndex: number | undefined; 
+  allTaskLists$ = this.taskListManager.allTaskLists$;
 
-  taskList: TaskList | undefined;
+  activeListControlIndex$ = this.taskListManager.activeListControlIndex$;
 
   isNewTaskListFormFieldVisible: boolean = false;
 
@@ -32,26 +30,19 @@ export class TodoListComponent implements OnInit, OnDestroy {
 
   taskListInputValue: string = '';
 
-  listId: Observable<string> | undefined;
-
   private destroy$ = new Subject<void>();
 
-  constructor(private apiService: ApiService, private changeDetectorRef: ChangeDetectorRef, private route: ActivatedRoute, private router: Router) {}
+  constructor(private taskListManager: TaskListManagerService, private apiService: ApiService, private changeDetectorRef: ChangeDetectorRef, private router: Router) {}
 
   ngOnInit(): void {
-    this.loadLists();
-
-    const listId$: Observable<string> = this.route.queryParams.pipe(
-      map((params): string => params['list']),
-    );
+    this.taskListManager.loadLists();
     
-    listId$
+    this.taskListManager.listId$
       .pipe(takeUntil(this.destroy$))
       .subscribe(listId => {
         this.activeListId = listId;
         this.radioBtnGroup.controls['activeTaskList'].setValue(listId);
       });
-    this.listId = listId$;
   }
 
   ngOnDestroy(): void {
@@ -64,35 +55,23 @@ export class TodoListComponent implements OnInit, OnDestroy {
     return false;
   }
 
-  deleteTaskListById(id: string): void {
-    this.apiService.deleteTaskList(id)
-      .subscribe(() => {
-        this.router.navigate([]);
-        this.changeDetectorRef.markForCheck();
-        this.loadLists();
-        this.selectedTaskListIndex = undefined;
-      })
+  onRename(id: string, title: string) {
+    this.taskListManager.renameTaskList(id, title);
+  }
+
+  onDelete(id: string) {
+    this.taskListManager.deleteTaskListById(id);
   }
 
   onBlur(): void {
-    this.selectedTaskListIndex = undefined;
+    this.taskListManager.changeActiveIndex(0);
     this.isNewTaskListFormFieldVisible = false;
     this.changeDetectorRef.markForCheck();
   }
 
   showRenameTaskListInput(taskListIndex: number, taskListTitle: string): void {
-    this.selectedTaskListIndex = taskListIndex;
+    this.taskListManager.changeActiveIndex(taskListIndex);
     this.taskListInputValue = taskListTitle;
-  }
-
-  renameTaskList(id: string, title: string): void {
-    this.apiService.renameTaskList(id, title)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(() => {
-        this.changeDetectorRef.markForCheck();
-        this.loadLists();
-        this.selectedTaskListIndex = undefined;
-      });
   }
 
   showNewTaskListFormField(): void {
@@ -111,20 +90,11 @@ export class TodoListComponent implements OnInit, OnDestroy {
       .subscribe(data => {
         const list = data.list.id;
         this.changeDetectorRef.markForCheck();
-        this.loadLists();
+        this.taskListManager.loadLists();
         this.router.navigate([], {queryParams: {list}});
         this.isResultLoading = false;
       })
 
     this.isNewTaskListFormFieldVisible = false;
-  }
-
-  private loadLists(): void {
-    this.apiService.getLists()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(data => {
-        this.allTaskLists = data;
-        this.changeDetectorRef.markForCheck();
-      });
   }
 }

@@ -1,7 +1,8 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { TaskList } from '../../../shared/models/shared.models';
-import { Observable, Subject, filter, switchMap, takeUntil } from 'rxjs';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { TaskGroup, TaskGroupsList, TaskList } from '../../../shared/models/shared.models';
+import { Observable, ReplaySubject, Subject, combineLatest, filter, first, map, takeUntil } from 'rxjs';
 import { ApiService } from '../../../shared/api-service/api.service';
+import { TaskListManagerService } from '../../../shared/task-list-manager/task-list-manager.service';
 
 @Component({
   selector: 'app-active-task-list',
@@ -10,36 +11,37 @@ import { ApiService } from '../../../shared/api-service/api.service';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ActiveTaskListComponent implements OnDestroy, OnInit {
-  @Input() listId$: Observable<string> | undefined;
-
-  taskList: TaskList | undefined;
+  isRenameTaskListVisible: boolean = false
+ 
+  taskList$ = new ReplaySubject<TaskList>(1);
 
   isNewTaskInputVisible: boolean = false;
 
-  activeListId: string = '';
+  activeListId$: Observable<string> = this.taskListManager.listId$;
+
+  allTaskLists$: Observable<TaskGroupsList> = this.taskListManager.allTaskLists$
+
+  activeTaskGroup$: Observable<TaskGroup> = combineLatest(
+    [this.allTaskLists$, this.taskListManager.listId$]
+  ).pipe(
+    map(([allTaskLists, listId]) => {
+      return allTaskLists.lists.find(list => list.id === listId) as TaskGroup;
+    })
+  );
 
   private destroy$ = new Subject<void>();
 
-  constructor(public apiService: ApiService, private changeDetectorRef: ChangeDetectorRef) {
+  constructor(private apiService: ApiService, private taskListManager: TaskListManagerService, private changeDetectorRef: ChangeDetectorRef) {
   } 
 
   ngOnInit(): void {
-    this.listId$?.pipe(
+    this.taskListManager.listId$.pipe(
       filter(listId => !!listId),
-      switchMap((listId) => this.loadTaskList(listId)),
       takeUntil(this.destroy$),
     )
-    .subscribe(taskList => {
-      this.taskList = taskList;
-      this.changeDetectorRef.markForCheck();
-    });
-
-    this.listId$?.pipe(
-      takeUntil(this.destroy$)
-    )
     .subscribe(listId => {
-      this.activeListId = listId;
-    })
+      this.getTaskList(listId)
+    });
   }
 
   ngOnDestroy(): void {
@@ -47,16 +49,48 @@ export class ActiveTaskListComponent implements OnDestroy, OnInit {
     this.destroy$.complete();
   }
 
+  renameTaskList(title: string): void {
+    this.activeListId$
+      .pipe(
+        first(),
+        takeUntil(this.destroy$)
+      )
+      .subscribe(id => {
+        this.taskListManager.renameTaskList(id, title);
+      })
+  }
+
+  deleteTaskListById(): void {
+    this.activeListId$
+      .pipe(
+        first(),
+        takeUntil(this.destroy$)
+      )
+      .subscribe(id => {
+        this.taskListManager.deleteTaskListById(id);
+      })
+  }
+
   addNewTask(title: string): void {
-    if (!title) {
+    if (!title || !this.activeListId$) {
       return
     }
-    this.apiService.addNewTasks(title, this.activeListId)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(() => {
-        this.changeDetectorRef.markForCheck();
-        this.displayTaskList(this.activeListId);
-        this.isNewTaskInputVisible = false;
+
+    this.activeListId$
+      .pipe(
+        first(),
+        takeUntil(this.destroy$)
+      )
+      .subscribe(id => {
+        this.apiService.addNewTasks(title, id)
+        .pipe(
+          takeUntil(this.destroy$)
+        )
+        .subscribe(() => {
+          this.changeDetectorRef.markForCheck();
+          this.getTaskList(id);
+          this.isNewTaskInputVisible = false;
+      })
     })
   }
 
@@ -66,19 +100,16 @@ export class ActiveTaskListComponent implements OnDestroy, OnInit {
 
   onBlur(): void {
     this.isNewTaskInputVisible = false;
+    this.isRenameTaskListVisible = false;
     this.changeDetectorRef.markForCheck();
   }
 
-  private displayTaskList(id: string): void {
+  private getTaskList(id: string): void {
     this.apiService.getTaskList(id)
       .pipe(takeUntil(this.destroy$))
       .subscribe(taskList => {
-        this.taskList = taskList;
+        this.taskList$.next(taskList)
         this.changeDetectorRef.markForCheck();
       })
-  }
-
-  private loadTaskList(id: string): Observable<TaskList> {
-    return this.apiService.getTaskList(id)
-  }
+  } 
 }

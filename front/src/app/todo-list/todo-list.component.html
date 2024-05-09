@@ -1,27 +1,27 @@
 <div [formGroup]="radioBtnGroup" class="task-list">
   <mat-radio-group formControlName="activeTaskList" class="task-list__group">
     <a
-      *ngFor="let todoList of allTaskLists?.lists; let taskListIndex = index" 
+      *ngFor="let todoList of (allTaskLists$ | async)?.lists; let taskListIndex = 'index + 1'" 
       [routerLink]="['/todo']"
       [queryParams]="{list: todoList.id}"
       class="task-list__link"
     >
       <mat-radio-button [value]="todoList.id" class="task-list__list">
         <div class="task-list__task-group">
-          <span *ngIf="selectedTaskListIndex !== taskListIndex">
+          <span *ngIf="(activeListControlIndex$ | async) !== taskListIndex">
             {{todoList.title}}
           </span>
           <app-form-field-layout 
-            *ngIf="selectedTaskListIndex === taskListIndex"
+            *ngIf="(activeListControlIndex$ | async) === taskListIndex"
             [taskListInputValue]="taskListInputValue"
             class="rename-task-list"
-            (taskListInput)="renameTaskList(todoList.id, $event)"
+            (taskListInput)="onRename(todoList.id, $event)"
             (taskListInputBlur)="onBlur()"
           ></app-form-field-layout>
         </div>
         <div>
           <button 
-            *ngIf="selectedTaskListIndex !== taskListIndex" 
+            *ngIf="(activeListControlIndex$ | async) !== taskListIndex" 
             [matMenuTriggerRestoreFocus]="false" 
             [matMenuTriggerFor]="menu" 
             mat-icon-button
@@ -40,7 +40,7 @@
             </button>
             <button 
               mat-menu-item 
-              (click)="deleteTaskListById(todoList.id)"
+              (click)="onDelete(todoList.id)"
             >
               Delete
             </button>
@@ -53,16 +53,17 @@
     </button>
     <div class="new-task-list-wrapper">
       <app-form-field-layout
-      *ngIf="isNewTaskListFormFieldVisible"
-      class="new-task-list" 
-      (taskListInput)="createNewTaskList($event)" 
-      (taskListInputBlur)="onBlur()"
-    ></app-form-field-layout>
+        *ngIf="isNewTaskListFormFieldVisible"
+        [taskListInputValue]="''"
+        class="new-task-list" 
+        (taskListInput)="createNewTaskList($event)" 
+        (taskListInputBlur)="onBlur()"
+      ></app-form-field-layout>
     </div>
   </mat-radio-group>
 </div>
 
-<app-active-task-list [listId$]="listId"></app-active-task-list>
+<app-active-task-list></app-active-task-list>
 
 <div [ngClass]="{'loading-screen': isResultLoading}">
   <img class="loading-spinner" src="/assets/svg/loading-screen.svg" alt="">
