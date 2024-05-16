@@ -1,7 +1,16 @@
 <div [formGroup]="radioBtnGroup" class="task-list">
+  <div class="search">
+    <mat-form-field appearance="outline" class="search__form-field">
+      <input matInput
+        formControlName="searchListValue"
+        placeholder="Search"
+      >
+      <span matSuffix class="search__icon">🔍︎</span>
+    </mat-form-field>
+  </div>
   <mat-radio-group formControlName="activeTaskList" class="task-list__group">
     <a
-      *ngFor="let todoList of (allTaskLists$ | async)?.lists; let taskListIndex = 'index + 1'" 
+      *ngFor="let todoList of (filteredLists$ | async); let taskListIndex = 'index + 1'" 
       [routerLink]="['/todo']"
       [queryParams]="{list: todoList.id}"
       class="task-list__link"
