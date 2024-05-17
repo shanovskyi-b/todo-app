@@ -33,7 +33,7 @@ export class TodoListComponent implements OnInit, OnDestroy {
           list => list.title
             .trim()
             .toLowerCase()
-            .includes(value.trim().toLowerCase()) === true
+            .includes(value.trim().toLowerCase())
           )
       })
     )

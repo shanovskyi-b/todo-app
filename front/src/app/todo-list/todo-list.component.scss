@@ -152,10 +152,14 @@
   }
 
   &__icon {
-    margin-right: 5px;
+    position: absolute;
+    right: 1px;
   }
 
   ::ng-deep {
+    .mat-mdc-text-field-wrapper {
+      padding-right: 5px;
+    }
     .mat-mdc-form-field-subscript-wrapper {
       display: none;
     }
