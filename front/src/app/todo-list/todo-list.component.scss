@@ -152,8 +152,8 @@
   }
 
   &__icon {
-    position: absolute;
-    right: 1px;
+    height: 18px;
+    font-size: 22px;
   }
 
   ::ng-deep {
@@ -162,6 +162,9 @@
     }
     .mat-mdc-form-field-subscript-wrapper {
       display: none;
+    }
+    .mat-mdc-input-element {
+      width: 85%;
     }
   }
 }
