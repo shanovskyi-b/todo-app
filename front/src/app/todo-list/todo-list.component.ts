@@ -2,8 +2,9 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, OnDestro
 import { ApiService } from '../shared/api-service/api.service';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Subject, takeUntil } from 'rxjs';
+import { Observable, Subject, combineLatestWith, map, startWith, takeUntil } from 'rxjs';
 import { TaskListManagerService } from '../shared/task-list-manager/task-list-manager.service';
+import { TaskGroup } from '../shared/models/shared.models';
 
 @Component({
   selector: 'app-todo-list',
@@ -15,10 +16,27 @@ export class TodoListComponent implements OnInit, OnDestroy {
   @ViewChild('newTaskListFormField') newTaskListFormField: ElementRef | undefined;
 
   radioBtnGroup: FormGroup = new FormGroup ({
-    activeTaskList: new FormControl()
+    activeTaskList: new FormControl(),
+    searchListValue: new FormControl(''),
   })
 
-  allTaskLists$ = this.taskListManager.allTaskLists$;
+  filteredLists$: Observable<TaskGroup[]> = this.taskListManager.allTaskLists$
+    .pipe(
+      combineLatestWith(
+        this.radioBtnGroup.controls['searchListValue'].valueChanges
+        .pipe(
+          startWith(this.radioBtnGroup.controls['searchListValue'].value)
+        )
+      ),
+      map(([allTaskLists, value]) => {
+        return allTaskLists.lists.filter(
+          list => list.title
+            .trim()
+            .toLowerCase()
+            .includes(value.trim().toLowerCase())
+          )
+      })
+    )
 
   activeListControlIndex$ = this.taskListManager.activeListControlIndex$;
 
@@ -36,7 +54,7 @@ export class TodoListComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.taskListManager.loadLists();
-    
+
     this.taskListManager.listId$
       .pipe(takeUntil(this.destroy$))
       .subscribe(listId => {

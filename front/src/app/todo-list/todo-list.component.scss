@@ -1,9 +1,12 @@
+@use '@angular/material' as mat;
+
 :host {
   height: 100vh;
   display: flex;
 }
 
 .task-list {
+  width: 280px;
   height: 100%;
   overflow-y: auto;
   padding-left: 20px;
@@ -28,7 +31,7 @@
     width: 30px;
     padding: 4px;
     position: absolute;
-    top: 10px;
+    top: 1px;
     right: 2px;
     visibility: hidden;
     ::ng-deep {
@@ -40,7 +43,8 @@
   }
 
   &__list {
-    width: 260px;
+    position: relative;
+    width: 100%;
     height: 30px;
     border-radius: 5px;
     margin-top: 10px;
@@ -138,4 +142,22 @@
 
 .new-task-list-wrapper {
   margin-top: 15px;
+}
+
+
+.search {
+  @include mat.all-component-densities(-4);
+  
+  &__form-field {
+    width: 100%;
+  }
+
+  ::ng-deep {
+    .mat-mdc-form-field-subscript-wrapper {
+      display: none;
+    }
+    .mat-icon {
+      padding: 0px 5px 0px 0px;
+    }
+  }
 }
