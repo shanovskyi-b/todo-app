@@ -147,24 +147,17 @@
 
 .search {
   @include mat.all-component-densities(-4);
+  
   &__form-field {
     width: 100%;
   }
 
-  &__icon {
-    height: 18px;
-    font-size: 22px;
-  }
-
   ::ng-deep {
-    .mat-mdc-text-field-wrapper {
-      padding-right: 5px;
-    }
     .mat-mdc-form-field-subscript-wrapper {
       display: none;
     }
-    .mat-mdc-input-element {
-      width: 85%;
+    .mat-icon {
+      padding: 0px 5px 0px 0px;
     }
   }
 }
