@@ -6,7 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
-
+import { MatSidenavModule } from '@angular/material/sidenav';
 
 @NgModule({
   exports: [
@@ -19,6 +19,7 @@ import { MatMenuModule } from '@angular/material/menu';
     FormsModule,
     MatIconModule,
     MatMenuModule,
+    MatSidenavModule,
   ],
 })
 export class SharedModule { }
