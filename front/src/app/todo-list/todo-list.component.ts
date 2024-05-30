@@ -49,43 +49,40 @@ export class TodoListComponent implements OnInit, OnDestroy {
 
   taskListInputValue: string = '';
 
-  resize$ = fromEvent(window, 'resize')
+  resize$ = fromEvent(window, 'resize');
 
-  sidebarMode: MatDrawerMode = 'side'
+  sidebarMode: MatDrawerMode = 'side';
 
-  sidebarOpen: string = 'true'
+  isSidebarOpen: boolean = true;
 
   private destroy$ = new Subject<void>();
 
   constructor(private taskListManager: TaskListManagerService, private apiService: ApiService, private changeDetectorRef: ChangeDetectorRef, private router: Router) {}
 
   ngOnInit(): void {
-    this.sidebarOpen = (localStorage.getItem('sidebarOpen') as string)
-    if (document.documentElement.clientWidth <= 750) {
-      this.sidebarMode = 'over'
-    }
+    this.isSidebarOpen = document.documentElement.clientWidth >= 750
+     ? (localStorage.getItem('sidebarOpen') === 'true')
+     : false
 
     this.resize$
+      .pipe(
+        startWith(undefined),
+        takeUntil(this.destroy$)
+      )
       .subscribe(() => {
-        if (document.documentElement.clientWidth >= 750) {
-          this.sidebarMode = 'side'
-          this.sidebarOpen = 'true'
-          this.changeDetectorRef.markForCheck();
-          return
-        }
-        
-        this.sidebarMode = 'over'
-        this.sidebarOpen = 'false'
+        this.sidebarMode = document.documentElement.clientWidth >= 750 
+          ? 'side'
+          : 'over';
         this.changeDetectorRef.markForCheck();
-      })
+      });
 
     this.taskListManager.loadLists();
 
     this.taskListManager.listId$
       .pipe(takeUntil(this.destroy$))
       .subscribe(listId => {
-        if (!listId) {
-          localStorage.setItem('sidebarOpen', 'true')
+        if (!listId && document.documentElement.clientWidth <= 750) {
+          this.toggleSidebar();
         }
 
         this.activeListId = listId;
@@ -93,15 +90,10 @@ export class TodoListComponent implements OnInit, OnDestroy {
       });
   }
 
-  changeSidebarOpen(sidebarOpen: string) {
-    if (sidebarOpen === 'true') {
-      this.sidebarOpen = 'false'
-      localStorage.setItem('sidebarOpen', this.sidebarOpen)
-      return
-    }
-
-    this.sidebarOpen = 'true'
-    localStorage.setItem('sidebarOpen', this.sidebarOpen)
+  toggleSidebar() {
+    this.isSidebarOpen = !this.isSidebarOpen
+    localStorage.setItem('sidebarOpen', this.isSidebarOpen.toString());
+    this.changeDetectorRef.markForCheck()
   }
 
   ngOnDestroy(): void {

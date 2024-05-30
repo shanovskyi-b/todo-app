@@ -1,5 +1,5 @@
-<mat-sidenav-container autosize class="main">
-  <mat-sidenav #drawer [mode]="sidebarMode" [opened]="sidebarOpen">
+<mat-sidenav-container autosize class="main" (backdropClick)="isSidebarOpen = false">
+  <mat-sidenav #drawer [mode]="sidebarMode" [opened]="isSidebarOpen">
     <div [formGroup]="radioBtnGroup" class="task-list">
       <div class="search">
         <mat-form-field appearance="outline" class="search__form-field">
@@ -79,11 +79,9 @@
   </mat-sidenav>
 
   <mat-sidenav-content>
-    <div>
-      <button class="sidebar-button" type="button" mat-button (click)="drawer.toggle(); changeSidebarOpen(sidebarOpen)">
-        <mat-icon>view_headline</mat-icon>
-      </button>
-    </div>
+    <button class="sidebar-button" type="button" mat-button (click)="drawer.toggle(); toggleSidebar()">
+      <mat-icon class="sidebar-button__icon">view_headline</mat-icon>
+    </button>
     <app-active-task-list></app-active-task-list>
   </mat-sidenav-content>
 </mat-sidenav-container>

@@ -161,10 +161,6 @@
   }
 }
 
-.sidebar-button {
-  ::ng-deep {
-    .mat-icon {
-      margin: 0px;
-    }
-  }
+.sidebar-button__icon {
+  padding: 0;
 }
