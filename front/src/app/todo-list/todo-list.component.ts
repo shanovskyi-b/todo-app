@@ -55,33 +55,40 @@ export class TodoListComponent implements OnInit, OnDestroy {
 
   isSidebarOpen: boolean = true;
 
+  isNormalWindowSize: boolean | undefined;
+
+  isSmallWindowSize: boolean | undefined;
+
   private destroy$ = new Subject<void>();
 
   constructor(private taskListManager: TaskListManagerService, private apiService: ApiService, private changeDetectorRef: ChangeDetectorRef, private router: Router) {}
 
   ngOnInit(): void {
-    this.isSidebarOpen = document.documentElement.clientWidth >= 750
-     ? (localStorage.getItem('sidebarOpen') === 'true')
-     : false
-
     this.resize$
       .pipe(
         startWith(undefined),
         takeUntil(this.destroy$)
       )
       .subscribe(() => {
-        this.sidebarMode = document.documentElement.clientWidth >= 750 
+        this.isNormalWindowSize = document.documentElement.clientWidth > 750;
+        this.isSmallWindowSize = document.documentElement.clientWidth <= 750;
+
+        this.sidebarMode = this.isNormalWindowSize 
           ? 'side'
           : 'over';
         this.changeDetectorRef.markForCheck();
       });
 
+    this.isSidebarOpen = this.isNormalWindowSize
+    ? (localStorage.getItem('sidebarOpen') === 'true')
+    : false
+ 
     this.taskListManager.loadLists();
 
     this.taskListManager.listId$
       .pipe(takeUntil(this.destroy$))
       .subscribe(listId => {
-        if (!listId && document.documentElement.clientWidth <= 750) {
+        if (!listId && this.isSmallWindowSize) {
           this.toggleSidebar();
         }
 
