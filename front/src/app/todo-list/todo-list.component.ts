@@ -57,8 +57,6 @@ export class TodoListComponent implements OnInit, OnDestroy {
 
   isNormalWindowSize: boolean | undefined;
 
-  isSmallWindowSize: boolean | undefined;
-
   private destroy$ = new Subject<void>();
 
   constructor(private taskListManager: TaskListManagerService, private apiService: ApiService, private changeDetectorRef: ChangeDetectorRef, private router: Router) {}
@@ -70,8 +68,7 @@ export class TodoListComponent implements OnInit, OnDestroy {
         takeUntil(this.destroy$)
       )
       .subscribe(() => {
-        this.isNormalWindowSize = document.documentElement.clientWidth > 750;
-        this.isSmallWindowSize = document.documentElement.clientWidth <= 750;
+        this.isNormalWindowSize = document.documentElement.clientWidth >= 750;
 
         this.sidebarMode = this.isNormalWindowSize 
           ? 'side'
@@ -88,7 +85,7 @@ export class TodoListComponent implements OnInit, OnDestroy {
     this.taskListManager.listId$
       .pipe(takeUntil(this.destroy$))
       .subscribe(listId => {
-        if (!listId && this.isSmallWindowSize) {
+        if (!listId && !this.isNormalWindowSize) {
           this.toggleSidebar();
         }
 
