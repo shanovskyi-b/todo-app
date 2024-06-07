@@ -1,81 +1,90 @@
-<div [formGroup]="radioBtnGroup" class="task-list">
-  <div class="search">
-    <mat-form-field appearance="outline" class="search__form-field">
-      <input matInput
-        formControlName="searchListValue"
-        placeholder="Search"
-      >
-      <mat-icon 
-        matSuffix 
-        class="search__icon"
-      >search</mat-icon>
-    </mat-form-field>
-  </div>
-  <mat-radio-group formControlName="activeTaskList" class="task-list__group">
-    <a
-      *ngFor="let todoList of (filteredLists$ | async); let taskListIndex = 'index + 1'" 
-      [routerLink]="['/todo']"
-      [queryParams]="{list: todoList.id}"
-      class="task-list__link"
-    >
-      <mat-radio-button [value]="todoList.id" class="task-list__list">
-        <div class="task-list__task-group">
-          <span *ngIf="(activeListControlIndex$ | async) !== taskListIndex">
-            {{todoList.title}}
-          </span>
-          <app-form-field-layout 
-            *ngIf="(activeListControlIndex$ | async) === taskListIndex"
-            [taskListInputValue]="taskListInputValue"
-            class="rename-task-list"
-            (taskListInput)="onRename(todoList.id, $event)"
+<mat-sidenav-container autosize class="main" (backdropClick)="isSidebarOpen = false">
+  <mat-sidenav #drawer [mode]="sidebarMode" [opened]="isSidebarOpen">
+    <div [formGroup]="radioBtnGroup" class="task-list">
+      <div class="search">
+        <mat-form-field appearance="outline" class="search__form-field">
+          <input matInput
+            formControlName="searchListValue"
+            placeholder="Search"
+          >
+          <mat-icon 
+            matSuffix 
+            class="search__icon"
+          >search</mat-icon>
+        </mat-form-field>
+      </div>
+      <mat-radio-group formControlName="activeTaskList" class="task-list__group">
+        <a
+          *ngFor="let todoList of (filteredLists$ | async); let taskListIndex = 'index + 1'" 
+          [routerLink]="['/todo']"
+          [queryParams]="{list: todoList.id}"
+          class="task-list__link"
+        >
+          <mat-radio-button [value]="todoList.id" class="task-list__list">
+            <div class="task-list__task-group">
+              <span *ngIf="(activeListControlIndex$ | async) !== taskListIndex">
+                {{todoList.title}}
+              </span>
+              <app-form-field-layout 
+                *ngIf="(activeListControlIndex$ | async) === taskListIndex"
+                [taskListInputValue]="taskListInputValue"
+                class="rename-task-list"
+                (taskListInput)="onRename(todoList.id, $event)"
+                (taskListInputBlur)="onBlur()"
+              ></app-form-field-layout>
+            </div>
+            <div>
+              <button 
+                *ngIf="(activeListControlIndex$ | async) !== taskListIndex" 
+                [matMenuTriggerRestoreFocus]="false" 
+                [matMenuTriggerFor]="menu" 
+                mat-icon-button
+                disableRipple="true"
+                class="task-list__showing-control-menu"
+                (click)="stopPropagation($event)"
+              >
+                <mat-icon>more_horiz</mat-icon>
+              </button>
+              <mat-menu #menu="matMenu">
+                <button
+                  mat-menu-item
+                  (click)="showRenameTaskListInput(taskListIndex, todoList.title)"
+                >
+                  Rename
+                </button>
+                <button 
+                  mat-menu-item 
+                  (click)="onDelete(todoList.id)"
+                >
+                  Delete
+                </button>
+              </mat-menu>
+            </div>
+          </mat-radio-button>
+        </a>
+        <button *ngIf="!isNewTaskListFormFieldVisible" mat-icon-button class="task-list__add" (click)="showNewTaskListFormField()">
+          <mat-icon>add</mat-icon>
+        </button>
+        <div class="new-task-list-wrapper">
+          <app-form-field-layout
+            *ngIf="isNewTaskListFormFieldVisible"
+            [taskListInputValue]="''"
+            class="new-task-list" 
+            (taskListInput)="createNewTaskList($event)" 
             (taskListInputBlur)="onBlur()"
           ></app-form-field-layout>
         </div>
-        <div>
-          <button 
-            *ngIf="(activeListControlIndex$ | async) !== taskListIndex" 
-            [matMenuTriggerRestoreFocus]="false" 
-            [matMenuTriggerFor]="menu" 
-            mat-icon-button
-            disableRipple="true"
-            class="task-list__showing-control-menu"
-            (click)="stopPropagation($event)"
-          >
-            <mat-icon>more_horiz</mat-icon>
-          </button>
-          <mat-menu #menu="matMenu">
-            <button
-              mat-menu-item
-              (click)="showRenameTaskListInput(taskListIndex, todoList.title)"
-            >
-              Rename
-            </button>
-            <button 
-              mat-menu-item 
-              (click)="onDelete(todoList.id)"
-            >
-              Delete
-            </button>
-          </mat-menu>
-        </div>
-      </mat-radio-button>
-    </a>
-    <button *ngIf="!isNewTaskListFormFieldVisible" mat-icon-button class="task-list__add" (click)="showNewTaskListFormField()">
-      <mat-icon>add</mat-icon>
-    </button>
-    <div class="new-task-list-wrapper">
-      <app-form-field-layout
-        *ngIf="isNewTaskListFormFieldVisible"
-        [taskListInputValue]="''"
-        class="new-task-list" 
-        (taskListInput)="createNewTaskList($event)" 
-        (taskListInputBlur)="onBlur()"
-      ></app-form-field-layout>
+      </mat-radio-group>
     </div>
-  </mat-radio-group>
-</div>
+  </mat-sidenav>
 
-<app-active-task-list></app-active-task-list>
+  <mat-sidenav-content>
+    <button class="sidebar-button" type="button" mat-button (click)="drawer.toggle(); toggleSidebar()">
+      <mat-icon class="sidebar-button__icon">menu</mat-icon>
+    </button>
+    <app-active-task-list></app-active-task-list>
+  </mat-sidenav-content>
+</mat-sidenav-container>
 
 <div [ngClass]="{'loading-screen': isResultLoading}">
   <img class="loading-spinner" src="/assets/svg/loading-screen.svg" alt="">

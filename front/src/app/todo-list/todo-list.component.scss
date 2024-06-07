@@ -1,8 +1,7 @@
 @use '@angular/material' as mat;
 
-:host {
+.main {
   height: 100vh;
-  display: flex;
 }
 
 .task-list {
@@ -160,4 +159,8 @@
       padding: 0px 5px 0px 0px;
     }
   }
+}
+
+.sidebar-button__icon {
+  padding: 0;
 }

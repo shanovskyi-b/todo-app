@@ -2,9 +2,10 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, OnDestro
 import { ApiService } from '../shared/api-service/api.service';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Observable, Subject, combineLatestWith, map, startWith, takeUntil } from 'rxjs';
+import { Observable, Subject, combineLatestWith, fromEvent, map, startWith, takeUntil } from 'rxjs';
 import { TaskListManagerService } from '../shared/task-list-manager/task-list-manager.service';
 import { TaskGroup } from '../shared/models/shared.models';
+import { MatDrawerMode } from '@angular/material/sidenav';
 
 @Component({
   selector: 'app-todo-list',
@@ -48,19 +49,55 @@ export class TodoListComponent implements OnInit, OnDestroy {
 
   taskListInputValue: string = '';
 
+  resize$ = fromEvent(window, 'resize');
+
+  sidebarMode: MatDrawerMode = 'side';
+
+  isSidebarOpen: boolean = true;
+
+  isNormalWindowSize: boolean | undefined;
+
   private destroy$ = new Subject<void>();
 
   constructor(private taskListManager: TaskListManagerService, private apiService: ApiService, private changeDetectorRef: ChangeDetectorRef, private router: Router) {}
 
   ngOnInit(): void {
+    this.resize$
+      .pipe(
+        startWith(undefined),
+        takeUntil(this.destroy$)
+      )
+      .subscribe(() => {
+        this.isNormalWindowSize = document.documentElement.clientWidth >= 750;
+
+        this.sidebarMode = this.isNormalWindowSize 
+          ? 'side'
+          : 'over';
+        this.changeDetectorRef.markForCheck();
+      });
+
+    this.isSidebarOpen = this.isNormalWindowSize
+    ? (localStorage.getItem('sidebarOpen') === 'true')
+    : false
+ 
     this.taskListManager.loadLists();
 
     this.taskListManager.listId$
       .pipe(takeUntil(this.destroy$))
       .subscribe(listId => {
+        if (!listId && !this.isNormalWindowSize) {
+          this.toggleSidebar();
+        }
+
         this.activeListId = listId;
         this.radioBtnGroup.controls['activeTaskList'].setValue(listId);
       });
+  }
+
+  toggleSidebar() {
+    this.isSidebarOpen = !this.isSidebarOpen
+    localStorage.setItem('sidebarOpen', this.isSidebarOpen.toString());
+    this.changeDetectorRef.markForCheck()
   }
 
   ngOnDestroy(): void {
